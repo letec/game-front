@@ -2,10 +2,12 @@
   <div class="container">
     <div class="row login">
       <div class="col-md-12 login-logo">
-        sdsds
+        <router-link to="/" class="col-md-12 reg-logo">
+          首页
+        </router-link>
       </div>
       <div class="col-md-12 login-info">
-        sdsdsd
+        <strong style="font-size:22px;">一个账号，</strong><b style="font-size:24px;">尽情玩转网页游戏！</b> 
       </div>
     </div>
     <div class="row">
@@ -15,7 +17,7 @@
           <input type="text" ref="password" placeholder="密码" />
         </div>
         <div class="login-form-button">
-          <span class="login-span" rel="login-btn">登&nbsp;&nbsp;&nbsp;陆</span>
+          <span class="login-span" @click="login()">登&nbsp;&nbsp;&nbsp;陆</span>
         </div>
         <div class="login-form-bottom">
           <router-link to="/forget" class="forget-span">无法登陆?</router-link>
@@ -29,6 +31,12 @@
 export default {
   data () {
     return {}
+  },
+  methods: {
+    login(){
+      let username = this.$refs.username.value;
+      let password = this.$refs.password.value;
+    }
   }
 }
 </script>

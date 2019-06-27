@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="row reg">
-      <div class="col-md-12 reg-logo">
-        sdsds
-      </div>
+      <router-link to="/" class="col-md-12 reg-logo">
+        屌丝游戏
+      </router-link>
       <div class="col-md-12 reg-info">
-        sdsdsd
+        畅玩
       </div>
     </div>
     <div class="row">
@@ -28,9 +28,14 @@
   </div>
 </template>
 <script>
+
 export default {
   data () {
     return {}
+  },
+  created () {
+  },
+  methods:{
   }
 }
 </script>
