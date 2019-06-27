@@ -1,7 +1,7 @@
 <template>
     <div>
         <header-view></header-view>
-        <div class="row main"></div>
+        <div class="main"></div>
     </div>
 </template>
 <script>

@@ -2,10 +2,10 @@
     <div class="container">
         <div class="row reg">
             <router-link to="/" class="col-md-12 reg-logo">
-                屌丝游戏
+                首页
             </router-link>
             <div class="col-md-12 reg-info">
-                畅玩
+                <strong style="font-size:22px;">一个账号，</strong><b style="font-size:24px;">尽情玩转网页游戏！</b>
             </div>
         </div>
         <div class="row">

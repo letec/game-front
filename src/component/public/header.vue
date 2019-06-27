@@ -72,6 +72,7 @@
     .header-menu ul li {
         display: inline-block;
         margin-right: 3rem;
+        cursor: pointer;
     }
 
     .header-menu ul li a {
