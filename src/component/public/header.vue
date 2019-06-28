@@ -62,7 +62,6 @@
     .active {
         color: #e5004f;
     }
-
     .header-menu ul {
         display: block;
         height: 100%;
@@ -75,9 +74,8 @@
         cursor: pointer;
     }
 
-    .header-menu ul li a {
-        color: black;
-        text-decoration: none;
+    .header-menu ul li span {
+        font-size: 16px;
     }
 
     .header-menu ul li a:hover {
@@ -90,7 +88,7 @@
     }
 
     .header-logo {
-        width: 35%;
+        width: 33%;
     }
 
     .header-menu {
@@ -109,11 +107,11 @@
     }
 
     .header-guest a:hover {
-        color: #c9242b;
+        color: #e5004f;
     }
 
     .header-unlogin {
-        font-size: 0.9em;
+        font-size: 14px;
     }
 
     .header-unlogin span {
@@ -126,9 +124,9 @@
         float: left;
         width: 321px;
         height: 46px;
-        margin-left: 36px;
         margin-top: 20px;
         border: 0;
         background-image: url(http://www.sdo.com/static2015/img/logo@1x.png)
     }
+
 </style>

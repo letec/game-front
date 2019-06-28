@@ -1,11 +1,9 @@
 <template>
     <div class="container">
         <div class="row login">
-            <div class="col-md-12 login-logo">
-                <router-link to="/" class="col-md-12 reg-logo">
-                    首页
-                </router-link>
-            </div>
+            <router-link to="/" class="reg-logo">
+                
+            </router-link>
             <div class="col-md-12 login-info">
                 <strong style="font-size:22px;">一个账号，</strong><b style="font-size:24px;">尽情玩转网页游戏！</b>
             </div>
@@ -20,11 +18,12 @@
                     <span class="login-span" @click="login()">登&nbsp;&nbsp;&nbsp;陆</span>
                 </div>
                 <div class="login-form-bottom">
-                    <router-link to="/forget" class="forget-span">无法登陆?</router-link>
+                    <!-- <router-link to="/forget" class="forget-span">无法登陆?</router-link> -->
                     <span class="reg-span">没有账号 <router-link to="/signin">立即注册</router-link></span>
                 </div>
             </div>
         </div>
+        <footer-view></footer-view>
     </div>
 </template>
 <script>
@@ -41,7 +40,7 @@
     }
 </script>
 
-<style lang="scss">
+<style scoped>
     .login {
         padding: 50px;
         text-align: center;
@@ -133,5 +132,14 @@
 
     .reg-span a {
         color: #c9242b;
+    }
+
+    .reg-logo {
+        margin: 0 auto;
+        text-align: center;
+        display: block;
+        height: 66px;
+        width: 64px;
+        background: url(https://static.web.sdo.com/copyright/pic/shengqu/shengqu-logo.png) no-repeat;
     }
 </style>

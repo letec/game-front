@@ -1,9 +1,7 @@
 <template>
     <div class="container">
         <div class="row reg">
-            <router-link to="/" class="col-md-12 reg-logo">
-                首页
-            </router-link>
+            <router-link to="/" class="reg-logo"></router-link>
             <div class="col-md-12 reg-info">
                 <strong style="font-size:22px;">一个账号，</strong><b style="font-size:24px;">尽情玩转网页游戏！</b>
             </div>
@@ -25,6 +23,7 @@
                 </div>
             </div>
         </div>
+        <footer-view></footer-view>
     </div>
 </template>
 <script>
@@ -37,7 +36,7 @@
     }
 </script>
 
-<style lang="scss">
+<style scoped>
     .reg {
         padding: 50px;
         text-align: center;
@@ -133,5 +132,14 @@
         float: right;
         width: 102px;
         height: 42px;
+    }
+
+    .reg-logo {
+        margin: 0 auto;
+        text-align: center;
+        display: block;
+        height: 66px;
+        width: 64px;
+        background: url(https://static.web.sdo.com/copyright/pic/shengqu/shengqu-logo.png) no-repeat;
     }
 </style>
