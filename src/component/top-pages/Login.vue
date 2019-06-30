@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row login">
             <router-link to="/" class="reg-logo">
-                
+
             </router-link>
             <div class="col-md-12 login-info">
                 <strong style="font-size:22px;">一个账号，</strong><b style="font-size:24px;">尽情玩转网页游戏！</b>
@@ -11,15 +11,15 @@
         <div class="row">
             <div class="login-form">
                 <div class="login-form-input">
-                    <input type="text" ref="username" placeholder="账号" />
-                    <input type="text" ref="password" placeholder="密码" />
+                    <input type="text" ref="username" placeholder="账号 5~16位字母和数字组成" />
+                    <input type="password" ref="password" placeholder="密码 6~16位字母和数字组成" />
                 </div>
                 <div class="login-form-button">
                     <span class="login-span" @click="login()">登&nbsp;&nbsp;&nbsp;陆</span>
                 </div>
                 <div class="login-form-bottom">
                     <!-- <router-link to="/forget" class="forget-span">无法登陆?</router-link> -->
-                    <span class="reg-span">没有账号 <router-link to="/signin">立即注册</router-link></span>
+                    <span class="reg-span">没有账号 <router-link to="/signup">立即注册</router-link></span>
                 </div>
             </div>
         </div>
@@ -27,6 +27,7 @@
     </div>
 </template>
 <script>
+    import global from "../../logic/global"
     export default {
         data() {
             return {}
@@ -35,6 +36,30 @@
             login() {
                 let username = this.$refs.username.value;
                 let password = this.$refs.password.value;
+                if (!username.match(/^[a-zA-Z0-9]{5,16}$/)) {
+                    this.$layer.msg("请输入合法的用户名");
+                    return false;
+                }
+                if (!password.match(/^[a-zA-Z0-9]{6,16}$/)) {
+                    this.$layer.msg("请输入合法的密码!")
+                    return false;
+                }
+                let params = {
+                    username: username,
+                    password: password,
+                };
+                this.$axios.post(global.apiUrl + ':8081/signin', JSON.stringify(params)).then(resp => {
+                    this.$layer.msg(resp.data.msg);
+                    if (resp.data.result == true) {
+                        setTimeout(() => {
+                            sessionStorage.setItem("onlineToken", resp.data.oid);
+                            sessionStorage.setItem("username", username);
+                            this.$router.push("/");
+                        }, 1500);
+                    }
+                }).catch(error => {
+                    this.$layer.msg(error);
+                });
             }
         }
     }

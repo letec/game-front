@@ -9,17 +9,17 @@
         <div class="row">
             <div class="reg-form">
                 <div class="reg-form-input">
-                    <input type="text" ref="username" placeholder="账号" />
-                    <input type="text" ref="password" placeholder="登陆密码" />
-                    <input type="text" ref="re-password" placeholder="确认密码" />
+                    <input type="text" ref="username" placeholder="账号 5~16位字母和数字组成" />
+                    <input type="password" ref="password" placeholder="密码 6~16位字母和数字组成" />
+                    <input type="password" ref="re-password" placeholder="请确认密码" />
                 </div>
                 <div class="reg-form-button">
-                    <img src="scsc" rel="vcodeImg" />
-                    <input type="text" ref="vCode" placeholder="验证码" />
-                    <span class="reg-ok" rel="reg-btn">注册我的账号</span>
+                    <img @click="verifyCode()" ref="vcodeImg" />
+                    <input ref="vCode" type="text" placeholder="验证码" />
+                    <span class="reg-ok" @click="doRegister()">注册我的账号</span>
                 </div>
                 <div class="reg-form-bottom">
-                    <span class="reg-span">已有账号 <router-link to="/login">立即登陆</router-link></span>
+                    <span class="reg-span">已有账号 <router-link to="/signin">立即登陆</router-link></span>
                 </div>
             </div>
         </div>
@@ -27,12 +27,66 @@
     </div>
 </template>
 <script>
+    import global from "../../logic/global"
     export default {
         data() {
-            return {}
+            return {
+                vcodeID: ""
+            }
         },
-        created() {},
-        methods: {}
+        mounted() {
+            this.verifyCode();
+        },
+        methods: {
+            doRegister() {
+                let username = this.$refs.username.value;
+                let password = this.$refs.password.value;
+                let repassword = this.$refs.password.value;
+                let vCode = this.$refs.vCode.value;
+                let flag = true;
+                if (!username.match(/^[a-zA-Z0-9]{5,16}$/)) {
+                    this.$layer.msg("请输入合法的用户名");
+                    flag = false;
+                }
+                if (!password.match(/^[a-zA-Z0-9]{6,16}$/)) {
+                    this.$layer.msg("请输入合法的密码!")
+                    flag = false;
+                }
+                if (password != repassword) {
+                    this.$layer.msg("两次输入的密码不一致!")
+                    flag = false;
+                }
+                if ( ! flag) {
+                    this.verifyCode()
+                    return false;
+                }
+                let params = {
+                    username: username,
+                    password: password,
+                    repassword: repassword,
+                    vCode: vCode,
+                    vcodeID: this.vcodeID
+                }
+                this.$axios.post(global.apiUrl + ':8081/signup', JSON.stringify(params)).then(resp => {
+                    this.$layer.msg(resp.data.msg);
+                    if (resp.data.result == true) {
+                        setTimeout(() => {
+                            this.$router.push("/signin")
+                        }, 1500)
+                    }
+                }).catch(error => {
+                    this.$layer.msg(error);
+                });
+            },
+            verifyCode() {
+                this.$axios.get(global.apiUrl + ':8081/captcha?v=' + (Math.floor(Math.random()*100))).then(resp => {
+                    this.$refs.vcodeImg.setAttribute("src", resp.data.img);
+                    this.vcodeID = resp.data.msg;
+                }).catch(error => {
+                    this.$layer.msg(error);
+                });
+            }
+        }
     }
 </script>
 
@@ -130,8 +184,9 @@
 
     .reg-form-button img {
         float: right;
-        width: 102px;
+        width: 120px;
         height: 42px;
+        cursor: pointer;
     }
 
     .reg-logo {

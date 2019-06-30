@@ -16,10 +16,15 @@ Vue.component("footer-view", footer);
 Vue.use(VueRouter)
 Vue.use(BootstrapVue)
 
+import layer from 'vue-layer'
+import Axios from 'axios'
+Vue.prototype.$layer = layer(Vue);
+Vue.prototype.$axios = Axios
+
 const routes = [
     { path: '/', component: App },
-    { path: '/login', component: Login },
-    { path: '/signin', component: Reg },
+    { path: '/signin', component: Login },
+    { path: '/signup', component: Reg },
     { path: '/about', component: About }
 ]
 

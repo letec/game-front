@@ -11,13 +11,14 @@
                 </ul>
             </div>
             <div class="header-guest">
-                <div class="header-unlogin">
-                    <router-link to="/login">登陆</router-link>
+                <div class="header-unlogin" :style="{'display':hasLogin?'none':'block'}">
+                    <router-link to="/signin">登陆</router-link>
                     <span>|</span>
-                    <router-link to="/signin">注册</router-link>
+                    <router-link to="/signup">注册</router-link>
                 </div>
-                <div class="header-login">
-                    <a></a>
+                <div class="header-login" :style="{'display':hasLogin?'block':'none'}">
+                    <a href="javascript:void(0)">{{username}}</a>
+                    <a href="javascript:void(0)" @click="quit()">退出</a>
                 </div>
             </div>
         </div>
@@ -27,12 +28,17 @@
     export default {
         data() {
             return {
-                activeTarget: 0
+                activeTarget: 0,
+                hasLogin: false,
+                username: sessionStorage.getItem("username")
             }
         },
         created() {
             this.activeTarget = typeof this.$route.query.activeTarget != "undefined" ? this.$route.query.activeTarget :
                 1;
+            if (sessionStorage.getItem("onlineToken") && sessionStorage.getItem("username")) {
+                this.hasLogin = true;
+            }
         },
         methods: {
             activeClick(flag) {
@@ -54,6 +60,10 @@
                         });
                         break;
                 }
+            },
+            quit() {
+                sessionStorage.clear();
+                window.location.href = document.domain;
             }
         }
     }
@@ -62,6 +72,7 @@
     .active {
         color: #e5004f;
     }
+
     .header-menu ul {
         display: block;
         height: 100%;
@@ -119,6 +130,13 @@
         margin-right: 0.8rem;
     }
 
+    .header-login a {
+        cursor: pointer;
+        font-size: 15px;
+        margin-left: 10px;
+        color: #141313;
+    }
+
     .logo {
         display: block;
         float: left;
@@ -128,5 +146,4 @@
         border: 0;
         background-image: url(http://www.sdo.com/static2015/img/logo@1x.png)
     }
-
 </style>

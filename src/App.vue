@@ -26,9 +26,8 @@
                             <div class="drop_t">
                                 <ul>
                                     <li v-for="(img,k) in item.imgs" v-bind:key="k" style="display:inline-block">
-                                        <a href="http://woool.sdo.com" class="pic" target="_blank">
-                                            <img class="banner_img"
-                                                src="http://spread.sdo.com/ipic/20190605/1559700367768299.jpg">
+                                        <a href="javascript:void(0)" class="pic" target="_blank">
+                                            <img class="banner_img" :src="img">
                                             <span class="go"></span>
                                         </a>
                                     </li>
@@ -37,8 +36,10 @@
                             <div class="drop_b">
                                 <div class="drop_b_box">
                                     <ul class="type clearfix">
-                                        <li v-for="(game,g) in item.list" class="showDetail none" v-bind:key="g">
-                                            <router-link :to="game.path" :class="{'hot':game.icon=='icon_2'}" class="listLink link" target="_blank">
+                                        <li @mouseenter="detail(1)" @mouseleave="detail(0)"
+                                            v-for="(game,g) in item.list" class="showDetail none" v-bind:key="g">
+                                            <router-link :to="game.path" :class="{'hot':game.icon=='icon_2'}"
+                                                class="listLink link" target="_blank">
                                                 <i :class="game.icon"></i>{{game.name}}
                                             </router-link>
                                             <div class="detail_box" style="display: none;">
@@ -110,6 +111,10 @@
         methods: {
             menuHover(flag, i) {
                 this.currentMenu = flag ? i : -1;
+            },
+            detail(flag) {
+                let display = flag == 1 ? 'block' : 'none';
+                event.target.children[1].style.display = display;
             }
         }
     };
@@ -291,7 +296,6 @@
         display: inline;
         float: left;
         position: relative;
-        z-index: 5;
         border-right: 1px solid #b8b8b8;
     }
 
@@ -316,5 +320,75 @@
     .drop_box .drop_main .drop_b a.hot {
         color: #f04e37;
         font-weight: bold;
+    }
+
+    .detail_box {
+        z-index: 5;
+        position: absolute;
+        width: 514px;
+        left: 125px;
+        top: 0px;
+        background-color: #fff;
+        display: none;
+    }
+
+    .detail_box .detail_main {
+        padding: 20px;
+    }
+
+    .detail_box .detail_main .img .detail_mask {
+        position: absolute;
+        top: 0;
+        left: -10px;
+        width: 100px;
+        height: 100%;
+    }
+
+    .detail_box .detail_main .img {
+        float: left;
+        position: relative;
+    }
+
+    .detail_box .detail_main .info .info_t {
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+    }
+
+    .detail_box .detail_main .info {
+        margin-left: 100px;
+    }
+
+    .detail_box .detail_main .info p {
+        color: #616161;
+        font-size: 12px;
+    }
+
+    .detail_box .detail_main .info .info_t h3 {
+        font-size: 16px;
+        color: #202020;
+    }
+
+    .detail_box .detail_main .img img {
+        width: 80px;
+    }
+
+    .detail_box .detail_main .info .btn {
+        color: #fff;
+        font-size: 14px;
+        text-align: center;
+        display: inline;
+        float: right;
+        background-color: #f68b1e;
+        padding: 0 10px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 2px;
+        margin-left: 8px;
+        opacity: 0.9;
+    }
+
+    .detail_box .detail_main .info .btn:hover {
+        opacity: 0.8;
     }
 </style>
