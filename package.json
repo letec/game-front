@@ -15,6 +15,7 @@
     "popper.js": "^1.12.9",
     "swiper": "^4.5.0",
     "vue": "^2.5.3",
+    "vue-jstree": "^2.1.6",
     "vue-layer": "^0.9.13",
     "vue-router": "^3.0.1"
   },

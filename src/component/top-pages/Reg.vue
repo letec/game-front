@@ -56,7 +56,7 @@
                     this.$layer.msg("两次输入的密码不一致!")
                     flag = false;
                 }
-                if ( ! flag) {
+                if (!flag) {
                     this.verifyCode()
                     return false;
                 }
@@ -67,7 +67,7 @@
                     vCode: vCode,
                     vcodeID: this.vcodeID
                 }
-                this.$axios.post(global.apiUrl + ':8081/signup', JSON.stringify(params)).then(resp => {
+                this.$axios.post(global.apiUrl + '/signup', JSON.stringify(params)).then(resp => {
                     this.$layer.msg(resp.data.msg);
                     if (resp.data.result == true) {
                         setTimeout(() => {
@@ -79,7 +79,7 @@
                 });
             },
             verifyCode() {
-                this.$axios.get(global.apiUrl + ':8081/captcha?v=' + (Math.floor(Math.random()*100))).then(resp => {
+                this.$axios.get(global.apiUrl + '/captcha?v=' + (Math.floor(Math.random() * 100))).then(resp => {
                     this.$refs.vcodeImg.setAttribute("src", resp.data.img);
                     this.vcodeID = resp.data.msg;
                 }).catch(error => {

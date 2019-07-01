@@ -26,8 +26,8 @@
                             <div class="drop_t">
                                 <ul>
                                     <li v-for="(img,k) in item.imgs" v-bind:key="k" style="display:inline-block">
-                                        <a href="javascript:void(0)" class="pic" target="_blank">
-                                            <img class="banner_img" :src="img">
+                                        <a href="javascript:void(0)" @click="goPlay(img.path)" class="pic" target="_blank">
+                                            <img class="banner_img" :src="img.src">
                                             <span class="go"></span>
                                         </a>
                                     </li>
@@ -37,11 +37,11 @@
                                 <div class="drop_b_box">
                                     <ul class="type clearfix">
                                         <li @mouseenter="detail(1)" @mouseleave="detail(0)"
-                                            v-for="(game,g) in item.list" class="showDetail none" v-bind:key="g">
-                                            <router-link :to="game.path" :class="{'hot':game.icon=='icon_2'}"
+                                            v-for="(game,g) in item.list" class="showDetail" v-bind:key="g">
+                                            <a @click="goPlay(game.path)" :class="{'hot':game.icon=='icon_2'}"
                                                 class="listLink link" target="_blank">
                                                 <i :class="game.icon"></i>{{game.name}}
-                                            </router-link>
+                                            </a>
                                             <div class="detail_box" style="display: none;">
                                                 <span class="arrow_1"></span>
                                                 <div class="detail_main">
@@ -52,8 +52,8 @@
                                                     <div class="info">
                                                         <div class="info_t">
                                                             <div class="info_link">
-                                                                <router-link :to="game.path" class="btn btn_yellow"
-                                                                    target="_blank">进入游戏</router-link>
+                                                                <a @click="goPlay(game.path)" class="btn btn_yellow"
+                                                                    target="_blank">进入游戏</a>
                                                             </div>
                                                             <h3 class="detailTitle">{{game.name}}</h3>
                                                         </div>
@@ -115,6 +115,13 @@
             detail(flag) {
                 let display = flag == 1 ? 'block' : 'none';
                 event.target.children[1].style.display = display;
+            },
+            goPlay(path) {
+                if (!global.checkOnline()) {
+                    this.$layer.msg("请先登录!");
+                    return;
+                }
+                this.$router.push(path);
             }
         }
     };
@@ -282,7 +289,7 @@
         height: 16px;
         display: block;
         position: absolute;
-        bottom: 15px;
+        bottom: 13px;
         right: 10px;
     }
 
@@ -318,6 +325,7 @@
 
     .drop_box .drop_main .drop_b a.link:hover,
     .drop_box .drop_main .drop_b a.hot {
+        cursor: pointer;
         color: #f04e37;
         font-weight: bold;
     }

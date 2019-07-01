@@ -48,7 +48,7 @@
                     username: username,
                     password: password,
                 };
-                this.$axios.post(global.apiUrl + ':8081/signin', JSON.stringify(params)).then(resp => {
+                this.$axios.post(global.apiUrl + '/signin', JSON.stringify(params)).then(resp => {
                     this.$layer.msg(resp.data.msg);
                     if (resp.data.result == true) {
                         setTimeout(() => {

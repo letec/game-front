@@ -1,4 +1,4 @@
-const apiUrl = "http://localhost"
+const apiUrl = "http://localhost:8081"
 
 const gameConfig = {
     chess: {
@@ -6,8 +6,14 @@ const gameConfig = {
         type: "棋类",
         code: "CHESS",
         imgs: [
-            require("../assets/images/website/chess_t.jpg"),
-            require("../assets/images/website/wuzi_t.jpg")
+            {
+                src: require("../assets/images/website/chess_t.jpg"),
+                path: "/chinessChess"
+            },
+            {
+                src: require("../assets/images/website/wuzi_t.jpg"),
+                path: "/lineFive",
+            }
         ],
         list: [
             {
@@ -33,8 +39,14 @@ const gameConfig = {
         type: "牌类",
         code: "POCKER",
         imgs: [
-            require("../assets/images/website/dizhu_t.jpg"),
-            require("../assets/images/website/blackjack_t.jpg"),
+            {
+                src: require("../assets/images/website/dizhu_t.jpg"),
+                path: "/dizhu"
+            },
+            {
+                src: require("../assets/images/website/blackjack_t.jpg"),
+                path: "/blackJack",
+            }
         ],
         list: [
             {
@@ -60,7 +72,10 @@ const gameConfig = {
         type: "休闲",
         code: "CASUAL",
         imgs: [
-            require("../assets/images/website/snack_t.jpg"),
+            {
+                src: require("../assets/images/website/snack_t.jpg"),
+                path: "/snack"
+            }
         ],
         list: [
             {
@@ -75,4 +90,22 @@ const gameConfig = {
     },
 };
 
-export default { gameConfig, apiUrl }
+function checkOnline() {
+    return sessionStorage.getItem("onlineToken") && sessionStorage.getItem("username")
+}
+
+function connectSocket() {
+    if (typeof window.socket == 'undefined') {
+        window.socket = new WebSocket("ws://localhost:8082/ws");
+        window.socket.onopen = () => {
+            window.socket.send('{"sd":"s"}');
+        };
+        window.socket.onclose = () => {
+            setTimeout(connectSocket(), 3000);
+        };
+        window.socket.onerror = (error) => {
+        };
+    }
+}
+
+export default { gameConfig, apiUrl, checkOnline, connectSocket }
