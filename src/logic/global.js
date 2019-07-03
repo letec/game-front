@@ -108,4 +108,13 @@ function connectSocket() {
     }
 }
 
-export default { gameConfig, apiUrl, checkOnline, connectSocket }
+function inArray(val, arr) {
+    for (let i in arr) {
+        if (arr[i] == val) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export default { gameConfig, apiUrl, checkOnline, connectSocket, inArray }

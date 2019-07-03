@@ -4,18 +4,18 @@
             <marquee class="scroll_text">欢迎</marquee>
         </div>
         <div class="left-panel col-md-2" :style="{'height':screenHeight-30+'px'}">
-            <v-jstree :data="gameList" allowBatch wholeRow allow-batch whole-row @item-click="itemClick()"></v-jstree>
+            <v-jstree :data="gameList" @item-click="itemClick()"></v-jstree>
         </div>
         <div class="middle-panel col-md-7" :style="{'height':screenHeight-30+'px','background-color':'#05436C'}">
             <div v-for="(item,i) in tables" class="hall-table" v-bind:key="i">
-                <img id="" class="table-user" :src="require('../../../assets/images/hall/nobody.png')">
-                <img id="" class="table-table" :src="require('../../../assets/images/hall/chessready.png')">
-                <img id="" class="table-user" :src="require('../../../assets/images/hall/nobody.png')">
+                <img :ref="'tables_'+i+'_A'" class="table-user" :src="item.PlayerAImg">
+                <img :ref="'tables_'+i+'_T'" class="table-table" :src="item.TableImg">
+                <img :ref="'tables_'+i+'_B'" class="table-user" :src="item.PlayerBImg">
             </div>
         </div>
         <div class="right-panel col-md-3" :style="{'height':screenHeight-30+'px'}">
             <div class="col-md-12">
-                <h4>在线: {{onlineNumbers}}人</h4>
+                <h4>在线: {{userList.length}}人</h4>
             </div>
             <div id="user-list" class="col-md-12">
                 <table class="table table-default">
@@ -47,7 +47,6 @@
                 tables: [],
                 gameList: [],
                 userList: [],
-                onlineNumbers: 0,
                 gameCode: "chineseChess"
             }
         },
@@ -57,7 +56,8 @@
                 this.$router.push("/");
                 return;
             }
-            this.roomList();
+            this.intoHall();
+            this.roomInfo();
             this.global.connectSocket();
             this.bindEvent();
         },
@@ -67,39 +67,70 @@
                     console.log(evt.data)
                 }
             },
-            itemClick() {},
-            roomList() {
-                let params = {
-                    oid: sessionStorage.getItem("onlineToken")
-                }
-                this.$axios.post(global.apiUrl + "/hall", JSON.stringify(params), resp => {
-                    console.log(resp)
-                    if (resp.data.result == true) {
-                        for (let i = 0; i < 35; i++) {
-                            this.tables.push({});
-                        }
-                        for (let key in global.gameConfig) {
-                            let obj = {
-                                text: global.gameConfig[key].type,
-                                value: key,
-                                children: []
-                            };
-                            for (let i in global.gameConfig[key].list) {
-                                obj.children.push({
-                                    text: global.gameConfig[key].list[i].name,
-                                    value: global.gameConfig[key].list[i].code,
-                                    children: []
-                                });
-                            }
-                            this.gameList.push(obj);
-                        }
+            intoHall() {
+                this.$axios.post(global.apiUrl + "/intohall", JSON.stringify({
+                    oid: sessionStorage.getItem("onlineToken"),
+                    gameCode: this.gameCode
+                })).then(resp => {
+                    if (resp.data == "EXIST") {
+                        console.log("已经在房间内!")
                     }
-                }).catch(error=>{
-
                 });
             },
-            getUserList() {
-
+            itemClick() {
+                let game = null;
+                for (let x in this.gameList) {
+                    for (let y in this.gameList[x].children) {
+                        if (this.gameList[x].children[y].selected == true) {
+                            game = this.gameList[x].children[y].value;
+                            break;
+                        }
+                    }
+                }
+                if (!this.global.inArray(game, [null, this.gameCode])) {
+                    this.$router.push("/" + game)
+                }
+            },
+            roomInfo() {
+                for (let key in global.gameConfig) {
+                    let obj = {
+                        text: global.gameConfig[key].type,
+                        value: key,
+                        children: []
+                    };
+                    for (let i in global.gameConfig[key].list) {
+                        obj.children.push({
+                            text: global.gameConfig[key].list[i].name,
+                            value: global.gameConfig[key].list[i].code
+                        });
+                    }
+                    this.gameList.push(obj);
+                }
+                this.$axios.post(global.apiUrl + "/hall", JSON.stringify({
+                    oid: sessionStorage.getItem("onlineToken"),
+                    gameCode: this.gameCode
+                })).then(resp => {
+                    if (resp.result == true) {
+                        for (let i = 0; i < resp.data.tables.length; i++) {
+                            let obj = resp.data.tables[i];
+                            obj.PlayerAImg = obj.PlayerA == "" ? require(
+                                '../../../assets/images/hall/nobody.png') : require(
+                                '../../../assets/avatar/' + obj.PlayerAAvatar + '.jpg');
+                            obj.TableImg = obj.Status == "0" ? require(
+                                '../../../assets/images/hall/chessready.png') : require(
+                                "../../../assets/images/hall/chessgaming.png");
+                            obj.PlayerBImg = obj.PlayerB == "" ? require(
+                                '../../../assets/images/hall/nobody.png') : require(
+                                '../../../assets/avatar/' + obj.PlayerBAvatar + '.jpg');
+                            this.tables.push(obj);
+                        }
+                        for (let u in resp.data.users) {
+                            this.userList.push(resp.data.users[u]);
+                        }
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
             }
         }
     }

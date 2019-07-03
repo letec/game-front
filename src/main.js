@@ -9,10 +9,11 @@ Vue.use(VueRouter)
 Vue.use(BootstrapVue)
 Vue.use(VJstree)
 
+import request from './logic/axios.js'
+Vue.prototype.$axios = request.service
+
 import layer from 'vue-layer'
-import Axios from 'axios'
 Vue.prototype.$layer = layer(Vue);
-Vue.prototype.$axios = Axios
 
 import Login from './component/top-pages/Login.vue'
 import Reg from './component/top-pages/Reg.vue'
@@ -20,8 +21,8 @@ import About from "./component/top-pages/About.vue"
 
 import Header from "./component/public/header.vue"
 import Footer from "./component/public/footer.vue"
-Vue.component("header-view", Header);
-Vue.component("footer-view", Footer);
+Vue.component("header-view", Header)
+Vue.component("footer-view", Footer)
 
 import ChessHall from "./component/game/chineseChess/hall.vue"
 

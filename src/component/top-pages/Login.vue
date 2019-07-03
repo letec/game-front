@@ -49,13 +49,13 @@
                     password: password,
                 };
                 this.$axios.post(global.apiUrl + '/signin', JSON.stringify(params)).then(resp => {
-                    this.$layer.msg(resp.data.msg);
-                    if (resp.data.result == true) {
+                    this.$layer.msg(resp.msg);
+                    if (resp.result == true) {
                         setTimeout(() => {
-                            sessionStorage.setItem("onlineToken", resp.data.oid);
+                            sessionStorage.setItem("onlineToken", resp.oid);
                             sessionStorage.setItem("username", username);
                             this.$router.push("/");
-                        }, 1500);
+                        }, 1000);
                     }
                 }).catch(error => {
                     this.$layer.msg(error);

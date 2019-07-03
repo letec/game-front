@@ -68,11 +68,11 @@
                     vcodeID: this.vcodeID
                 }
                 this.$axios.post(global.apiUrl + '/signup', JSON.stringify(params)).then(resp => {
-                    this.$layer.msg(resp.data.msg);
-                    if (resp.data.result == true) {
+                    this.$layer.msg(resp.msg);
+                    if (resp.result == true) {
                         setTimeout(() => {
                             this.$router.push("/signin")
-                        }, 1500)
+                        }, 1500);
                     }
                 }).catch(error => {
                     this.$layer.msg(error);
@@ -80,8 +80,8 @@
             },
             verifyCode() {
                 this.$axios.get(global.apiUrl + '/captcha?v=' + (Math.floor(Math.random() * 100))).then(resp => {
-                    this.$refs.vcodeImg.setAttribute("src", resp.data.img);
-                    this.vcodeID = resp.data.msg;
+                    this.$refs.vcodeImg.setAttribute("src", resp.img);
+                    this.vcodeID = resp.msg;
                 }).catch(error => {
                     this.$layer.msg(error);
                 });
