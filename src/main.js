@@ -24,14 +24,16 @@ import Footer from "./component/public/footer.vue"
 Vue.component("header-view", Header)
 Vue.component("footer-view", Footer)
 
-import ChessHall from "./component/game/chineseChess/hall.vue"
+import ChinessChess from "./component/game/chineseChess/hall.vue"
+import ChinessChessTable from "./component/game/chineseChess/table.vue"
 
 const routes = [
     { path: '/', component: App },
     { path: '/signin', component: Login },
     { path: '/signup', component: Reg },
     { path: '/about', component: About },
-    { path: '/chinessChess', component: ChessHall }
+    { path: '/chinessChess', component: ChinessChess },
+    { path: '/chinessChessTable', component: ChinessChessTable },
 ]
 
 const router = new VueRouter({
