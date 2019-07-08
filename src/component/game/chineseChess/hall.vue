@@ -43,7 +43,6 @@
         data() {
             return {
                 screenHeight: document.documentElement.clientHeight,
-                global: global,
                 tables: [],
                 gameList: [],
                 userList: [],
@@ -53,7 +52,7 @@
             }
         },
         created() {
-            if (!this.global.checkOnline()) {
+            if (!global.checkOnline()) {
                 sessionStorage.clear();
                 this.$router.push("/");
                 return;
@@ -74,19 +73,12 @@
                 this.gameList.push(obj);
             }
             this.intoHall();
-            this.global.connectSocket();
-            this.bindEvent();
             this.dataTimer = setInterval(this.roomInfo, 5000)
         },
         beforeDestroy() {
             clearInterval(this.dataTimer);
         },
         methods: {
-            bindEvent() {
-                window.socket.onmessage = (evt) => {
-                    console.log(evt.data);
-                }
-            },
             intoHall() {
                 this.$axios.post(global.apiUrl + "/intohall", JSON.stringify({
                     oid: sessionStorage.getItem("onlineToken"),
@@ -114,7 +106,7 @@
                         }
                     }
                 }
-                if (!this.global.inArray(game, [null, this.gameCode])) {
+                if (!global.inArray(game, [null, this.gameCode])) {
                     this.$router.push("/" + game)
                 }
             },
@@ -156,7 +148,10 @@
                     seat: seat
                 })).then(resp => {
                     this.$layer.close(msg);
-                    this.$router.push("/chinessChessTable");
+                    this.$router.push({
+                        path: "/chinessChessTable",
+                        query: { gameCode: this.gameCode, tableID: tableID, seat: seat}
+                    });
                     console.log(resp);
                 }).catch(error => {
                     this.$layer.close(msg);
