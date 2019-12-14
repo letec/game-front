@@ -91,7 +91,7 @@ const gameConfig = {
 };
 
 function checkOnline() {
-    return sessionStorage.getItem("onlineToken") && sessionStorage.getItem("username")
+    return sessionStorage.getItem("onlineToken") != null && sessionStorage.getItem("username") != null;
 }
 
 function connectSocket() {

@@ -13,10 +13,10 @@
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.1.0",
     "popper.js": "^1.16.0",
+    "sweetalert2": "^9.5.3",
     "swiper": "^4.5.1",
     "vue": "^2.6.11",
     "vue-jstree": "^2.1.6",
-    "vue-layer": "^0.9.14",
     "vue-router": "^3.1.3",
     "webpack-dev-server": "^3.9.0"
   },

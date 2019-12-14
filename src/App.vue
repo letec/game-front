@@ -26,7 +26,7 @@
                             <div class="drop_t">
                                 <ul>
                                     <li v-for="(img,k) in item.imgs" v-bind:key="k" style="display:inline-block">
-                                        <a href="javascript:void(0)" @click="goPlay(img.path)" class="pic" target="_blank">
+                                        <a @click="goPlay(img.path)" class="pic" target="_blank">
                                             <img class="banner_img" :src="img.src">
                                             <span class="go"></span>
                                         </a>
@@ -116,7 +116,7 @@
             },
             goPlay(path) {
                 if (!global.checkOnline()) {
-                    this.$layer.msg("请先登录!");
+                    this.$swal.fire("提示", "请先登录!", "info");
                     return;
                 }
                 this.$router.push(path);
@@ -279,6 +279,10 @@
         -webkit-transition: all 0.5s;
         -o-transition: all 0.5s;
         -ms-transition: all 0.5s;
+    }
+
+    .drop_box .drop_main .drop_t li .pic {
+        cursor: pointer;
     }
 
     .drop_box .drop_main .drop_t li .pic:hover img {

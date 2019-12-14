@@ -37,11 +37,11 @@
                 let username = this.$refs.username.value;
                 let password = this.$refs.password.value;
                 if (!username.match(/^[a-zA-Z0-9]{5,16}$/)) {
-                    this.$layer.msg("请输入合法的用户名");
+                    this.$swal.fire("提示", "请输入合法的用户名", "info");
                     return false;
                 }
                 if (!password.match(/^[a-zA-Z0-9]{6,16}$/)) {
-                    this.$layer.msg("请输入合法的密码!")
+                    this.$swal.fire("提示", "请输入合法的密码!", "info")
                     return false;
                 }
                 let params = {
@@ -49,7 +49,7 @@
                     password: password,
                 };
                 this.$axios.post(global.apiUrl + '/signin', JSON.stringify(params)).then(resp => {
-                    this.$layer.msg(resp.msg);
+                    this.$swal.fire("提示", resp.msg, "info");
                     if (resp.result == true) {
                         setTimeout(() => {
                             sessionStorage.setItem("onlineToken", resp.oid);
@@ -58,7 +58,7 @@
                         }, 1000);
                     }
                 }).catch(error => {
-                    this.$layer.msg(error);
+                    this.$swal.fire("错误", error, "error");
                 });
             }
         }

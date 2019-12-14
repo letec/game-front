@@ -12,8 +12,8 @@ Vue.use(VJstree)
 import request from './logic/axios.js'
 Vue.prototype.$axios = request.service
 
-import layer from 'vue-layer'
-Vue.prototype.$layer = layer(Vue);
+import swal from 'sweetalert2'
+Vue.prototype.$swal = swal;
 
 import Login from './component/top-pages/Login.vue'
 import Reg from './component/top-pages/Reg.vue'

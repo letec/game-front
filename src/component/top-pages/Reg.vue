@@ -45,15 +45,15 @@
                 let vCode = this.$refs.vCode.value;
                 let flag = true;
                 if (!username.match(/^[a-zA-Z0-9]{5,16}$/)) {
-                    this.$layer.msg("请输入合法的用户名");
+                    this.$swal.fire("提示", "请输入合法的用户名", "info");
                     flag = false;
                 }
                 if (!password.match(/^[a-zA-Z0-9]{6,16}$/)) {
-                    this.$layer.msg("请输入合法的密码!")
+                    this.$swal.fire("提示", "请输入合法的密码!", "info")
                     flag = false;
                 }
                 if (password != repassword) {
-                    this.$layer.msg("两次输入的密码不一致!")
+                    this.$swal.fire("提示", "两次输入的密码不一致!", "info")
                     flag = false;
                 }
                 if (!flag) {
@@ -68,14 +68,14 @@
                     vcodeID: this.vcodeID
                 }
                 this.$axios.post(global.apiUrl + '/signup', JSON.stringify(params)).then(resp => {
-                    this.$layer.msg(resp.msg);
+                    this.$swal.fire("提示", resp.msg, "info");
                     if (resp.result == true) {
                         setTimeout(() => {
                             this.$router.push("/signin")
                         }, 1500);
                     }
                 }).catch(error => {
-                    this.$layer.msg(error);
+                    this.$swal.fire("错误", error, "error");
                 });
             },
             verifyCode() {
@@ -83,7 +83,7 @@
                     this.$refs.vcodeImg.setAttribute("src", resp.img);
                     this.vcodeID = resp.msg;
                 }).catch(error => {
-                    this.$layer.msg(error);
+                    this.$swal.fire("错误", error, "error");
                 });
             }
         }

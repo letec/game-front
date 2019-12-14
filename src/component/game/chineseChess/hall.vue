@@ -85,14 +85,14 @@
                     gameCode: this.gameCode
                 })).then(resp => {
                     if (resp.data == "FAIL") {
-                        this.$layer.msg("进入房间失败!");
+                        this.$swal.fire("提示", "进入房间失败!", "info");
                         this.$router.push("/")
                         return;
                     }
                     this.roomInfo();
                 }).catch(error => {
                     console.log(error);
-                    this.$layer.msg("进入房间失败!");
+                    this.$swal.fire("提示", "进入房间失败!", "error");
                     this.$router.push("/")
                 });
             },
@@ -140,21 +140,18 @@
                 });
             },
             seatDown(tableID, seat) {
-                let msg = this.$layer.msg('加载中...', {icon: 16, shade: [0.5, '#f5f5f5'], scrollbar: false, offset: '0px', time: 99999});
                 this.$axios.post(global.apiUrl + "/seatdown", JSON.stringify({
                     oid: sessionStorage.getItem("onlineToken"),
                     gameCode: this.gameCode,
                     tableID: tableID,
                     seat: seat
                 })).then(resp => {
-                    this.$layer.close(msg);
                     this.$router.push({
                         path: "/chinessChessTable",
                         query: { gameCode: this.gameCode, tableID: tableID, seat: seat}
                     });
                     console.log(resp);
                 }).catch(error => {
-                    this.$layer.close(msg);
                     console.log(error);
                 });
             },
