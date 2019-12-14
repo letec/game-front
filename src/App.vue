@@ -226,8 +226,21 @@
         z-index: 3;
     }
 
-    .icon_2 {
-        background-image: url(/static/icons/ico);
+    .drop_box .drop_main .drop_b a.link{color: #222;font-size: 12px;}
+    .drop_box .drop_main .drop_b a.link:hover,.drop_box .drop_main .drop_b  a.hot{color: #f04e37;font-weight: bold;}
+    .drop_box .drop_main .drop_b .type i {
+        width: 18px;
+        height: 18px;
+        display: inline;
+        margin-right: 8px;
+        float: right;
+        vertical-align: middle;
+    }
+    .drop_box .drop_main .drop_b .type i.icon_1{
+        background: url(/static/icons/icon.png) no-repeat left -40px;
+    }
+    .drop_box .drop_main .drop_b .type i.icon_2{
+        background: url(/static/icons/icon.png) no-repeat left -60px;
     }
 
     .drop_box .arrow {

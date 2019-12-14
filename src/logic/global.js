@@ -22,7 +22,7 @@ const gameConfig = {
                 path: "/chinessChess",
                 img: require("../assets/images/website/chess_t.jpg"),
                 description: "中国象棋是起源于中国的一种棋戏，属于二人对抗性游戏的一种，在中国有着悠久的历史。由于用具简单，趣味性强，成为流行极为广泛的棋艺活动。",
-                icon: 'icon_1'
+                statuc: 'icon_1'
             },
             {
                 name: "五子棋",
