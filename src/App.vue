@@ -11,11 +11,11 @@
                 <div class="swiper-pagination"></div>
             </div>
         </div>
-        <div class="menu_wrap" style="left: 50px; top: 100px;">
+        <div class="menu_wrap">
             <ul>
                 <li v-bind:class="{cur:currentMenu==i}" @mouseenter="menuHover(true, i)" v-for="(item,i) in gameList"
                     v-bind:key="i">
-                    <a href="javascript:void(0);" class="menu_link">
+                    <a class="menu_link">
                         <h3>{{item.type}}</h3>
                         <span class="word">{{item.code}}</span>
                         <div class="bg"></div>
@@ -38,11 +38,10 @@
                                     <ul class="type clearfix">
                                         <li @mouseenter="detail(1)" @mouseleave="detail(0)"
                                             v-for="(game,g) in item.list" class="showDetail" v-bind:key="g">
-                                            <a @click="goPlay(game.path)" :class="{'hot':game.icon=='icon_2'}"
-                                                class="listLink link" target="_blank">
+                                            <a @click="goPlay(game.path)" :class="{'hot':game.icon=='icon_2'}" class="listLink link" target="_blank">
                                                 <i :class="game.icon"></i>{{game.name}}
                                             </a>
-                                            <div class="detail_box" style="display: none;">
+                                            <div class="detail_box">
                                                 <span class="arrow_1"></span>
                                                 <div class="detail_main">
                                                     <div class="img">
@@ -52,8 +51,7 @@
                                                     <div class="info">
                                                         <div class="info_t">
                                                             <div class="info_link">
-                                                                <a @click="goPlay(game.path)" class="btn btn_yellow"
-                                                                    target="_blank">进入游戏</a>
+                                                                <a @click="goPlay(game.path)" class="btn btn_yellow" target="_blank">进入游戏</a>
                                                             </div>
                                                             <h3 class="detailTitle">{{game.name}}</h3>
                                                         </div>
@@ -145,12 +143,14 @@
         margin: 0px 0 0 0px;
         zoom: 1;
         z-index: 15;
+        left: 50px; 
+        top: 100px;
     }
 
     .menu_link {
         box-sizing: border-box;
         text-align: center;
-        background-image: url(http://www.sdo.com/static2015/img/menu_bg.png);
+        background-image: url(/static/icons/menu_bg.png);
     }
 
     .menu_wrap ul li a:hover {
@@ -226,12 +226,17 @@
         z-index: 3;
     }
 
+    .icon_2 {
+        background-image: url(/static/icons/ico);
+    }
+
     .drop_box .arrow {
         position: absolute;
         left: 0;
-        background: url(http://www.sdo.com/static2015/img/arrow_1.png) no-repeat;
+        background-repeat: no-repeat;
         width: 12px;
         height: 24px;
+        background-image: url(/static/icons/arrow_1.png);
     }
 
     .drop_box .drop_main {
@@ -246,10 +251,11 @@
     }
 
     .drop_box .drop_main .drop_b {
-        background: url(http://www.sdo.com/static2015/img/bg_tra.png) repeat;
+        background-repeat: repeat;
         zoom: 1;
         margin-top: 6px;
         min-height: 380px;
+        background-image: url(/static/icons/bg_tra.png);
     }
 
     .drop_box .drop_main .drop_t li {
@@ -284,13 +290,14 @@
     }
 
     .drop_box .drop_main .drop_t .go {
-        background: url(http://www.sdo.com/static2015/img/btn_go.png) no-repeat;
+        background-repeat: no-repeat;
         width: 28px;
         height: 16px;
         display: block;
         position: absolute;
         bottom: 13px;
         right: 10px;
+        background-image: url(/static/icons/btn_go.png);
     }
 
     .drop_box .drop_main .drop_b .type {
@@ -313,14 +320,6 @@
         margin-right: 8px;
         float: right;
         vertical-align: middle;
-    }
-
-    .drop_box .drop_main .drop_b .type .icon_1 {
-        background: url(http://www.sdo.com/static2015/img/icon.png) no-repeat left -40px;
-    }
-
-    .drop_box .drop_main .drop_b .type .icon_2 {
-        background: url(http://www.sdo.com/static2015/img/icon.png) no-repeat left -60px;
     }
 
     .drop_box .drop_main .drop_b a.link:hover,

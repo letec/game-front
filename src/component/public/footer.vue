@@ -21,7 +21,7 @@
         width: 100%;
         z-index: 999;
         height: 100px;
-        background: url(http://www.sdo.com/static2015/img/bg_w.png) repeat;
+        background: url(/static/icons/bg_w.png) repeat;
     }
 
     .content {
@@ -35,7 +35,7 @@
     }
 
     .tiny_logo {
-        background: url(https://static.web.sdo.com/copyright/pic/shengqu/shengqu-logo.png) no-repeat 0 0;
+        background: url(/static/icons/shengqu-logo.png) no-repeat 0 0;
         width: 64px;
         height: 66px;
         margin-top: 15px;

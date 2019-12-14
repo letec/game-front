@@ -2,7 +2,9 @@
     <div class="col-md-7 header">
         <div class="row header">
             <div class="header-logo">
-                <a class="logo"></a>
+                <a class="logo">
+                    <img src="/static/icons/logo1x.png">
+                </a>
             </div>
             <div class="header-menu">
                 <ul>
@@ -144,6 +146,5 @@
         height: 46px;
         margin-top: 20px;
         border: 0;
-        background-image: url(http://www.sdo.com/static2015/img/logo@1x.png)
     }
 </style>
