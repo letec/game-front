@@ -11,7 +11,7 @@
                 <div class="swiper-pagination"></div>
             </div>
         </div>
-        <div class="menu_wrap" style="left: 50px; top: 100px;">
+        <div class="" style="left: 50px; top: 100px;">
             <ul>
                 <li v-bind:class="{cur:currentMenu==i}" @mouseenter="menuHover(true, i)" v-for="(item,i) in gameList"
                     v-bind:key="i">
