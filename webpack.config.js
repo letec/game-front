@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
   entry: './src/main.js',
@@ -58,7 +59,7 @@ module.exports = {
   performance: {
     hints: false
   },
-  plugins: [new ExtractTextPlugin("main.css")],
+  plugins: [new ExtractTextPlugin("main.css"),new VueLoaderPlugin()],
   devtool: '#eval-source-map'
 }
 
@@ -82,3 +83,4 @@ if (process.env.NODE_ENV === 'production') {
     })
   ])
 }
+
