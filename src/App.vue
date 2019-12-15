@@ -231,7 +231,6 @@
     .drop_box .drop_main .drop_b .type i {
         width: 18px;
         height: 18px;
-        display: inline;
         margin-right: 8px;
         float: right;
         vertical-align: middle;
@@ -324,7 +323,6 @@
     .drop_box .drop_main .drop_b .type li {
         padding: 0px 0 15px 20px;
         width: 176px;
-        display: inline;
         float: left;
         position: relative;
         border-right: 1px solid #b8b8b8;
@@ -333,7 +331,6 @@
     .drop_box .drop_main .drop_b .type i {
         width: 18px;
         height: 18px;
-        display: inline;
         margin-right: 8px;
         float: right;
         vertical-align: middle;
@@ -401,7 +398,6 @@
         color: #fff;
         font-size: 14px;
         text-align: center;
-        display: inline;
         float: right;
         background-color: #f68b1e;
         padding: 0 10px;
