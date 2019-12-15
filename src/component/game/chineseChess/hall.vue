@@ -86,14 +86,14 @@
                 })).then(resp => {
                     if (resp.data == "FAIL") {
                         this.$swal.fire("提示", "进入房间失败!", "info");
-                        this.$router.push("/")
+                        this.$router.push("/");
                         return;
                     }
                     this.roomInfo();
                 }).catch(error => {
                     console.log(error);
                     this.$swal.fire("提示", "进入房间失败!", "error");
-                    this.$router.push("/")
+                    this.$router.push("/");
                 });
             },
             itemClick() {
@@ -107,7 +107,7 @@
                     }
                 }
                 if (!global.inArray(game, [null, this.gameCode])) {
-                    this.$router.push("/" + game)
+                    this.$router.push("/" + game);
                 }
             },
             roomInfo() {

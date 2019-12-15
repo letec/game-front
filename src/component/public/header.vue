@@ -3,7 +3,7 @@
         <div class="row header">
             <div class="header-logo">
                 <a class="logo">
-                    <img src="/static/icons/logo1x.png">
+                    <img src="/static/icons/shengqu-logo.png">
                 </a>
             </div>
             <div class="header-menu">

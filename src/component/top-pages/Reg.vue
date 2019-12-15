@@ -68,7 +68,7 @@
                     vcodeID: this.vcodeID
                 }
                 this.$axios.post(global.apiUrl + '/signup', JSON.stringify(params)).then(resp => {
-                    this.$swal.fire("提示", resp.msg, "info");
+                    this.$swal.fire("提示", resp.message, "info");
                     if (resp.result == true) {
                         setTimeout(() => {
                             this.$router.push("/signin")
@@ -81,9 +81,9 @@
             verifyCode() {
                 this.$axios.get(global.apiUrl + '/captcha?v=' + (Math.floor(Math.random() * 100))).then(resp => {
                     this.$refs.vcodeImg.setAttribute("src", resp.img);
-                    this.vcodeID = resp.msg;
+                    this.vcodeID = resp.message;
                 }).catch(error => {
-                    this.$swal.fire("错误", error, "error");
+                    console.log(error);
                 });
             }
         }

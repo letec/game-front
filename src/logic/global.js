@@ -1,4 +1,4 @@
-const apiUrl = "http://localhost:8081"
+const apiUrl = "http://192.168.44.128:9501"
 
 const gameConfig = {
     chess: {

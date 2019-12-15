@@ -49,7 +49,7 @@
                     password: password,
                 };
                 this.$axios.post(global.apiUrl + '/signin', JSON.stringify(params)).then(resp => {
-                    this.$swal.fire("提示", resp.msg, "info");
+                    this.$swal.fire("提示", resp.message, "info");
                     if (resp.result == true) {
                         setTimeout(() => {
                             sessionStorage.setItem("onlineToken", resp.oid);

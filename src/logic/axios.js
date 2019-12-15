@@ -8,7 +8,7 @@ const service = Axios.create({
 
 service.interceptors.response.use(
     response => {
-        if (response.data.result == false && response.data.msg == "OFFLINE") {
+        if (response.data.result == false && response.data.message == "OFFLINE") {
             sessionStorage.clear();
             setTimeout(function(){
                 window.location.href = document.domain;
