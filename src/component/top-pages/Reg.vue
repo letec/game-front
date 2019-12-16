@@ -12,6 +12,7 @@
                     <input type="text" ref="username" placeholder="账号 5~16位字母和数字组成" />
                     <input type="password" ref="password" placeholder="密码 6~16位字母和数字组成" />
                     <input type="password" ref="re-password" placeholder="请确认密码" />
+                    <input type="text" ref="email" placeholder="邮箱地址" />
                 </div>
                 <div class="reg-form-button">
                     <img @click="verifyCode()" ref="vcodeImg" />
@@ -42,6 +43,7 @@
                 let username = this.$refs.username.value;
                 let password = this.$refs.password.value;
                 let repassword = this.$refs.password.value;
+                let email = this.$refs.email.value;
                 let vCode = this.$refs.vCode.value;
                 let flag = true;
                 if (!username.match(/^[a-zA-Z0-9]{5,16}$/)) {
@@ -56,23 +58,30 @@
                     this.$swal.fire("提示", "两次输入的密码不一致!", "info")
                     flag = false;
                 }
+                if (email != '' && !email.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/)) {
+                    this.$swal.fire("提示", "请输入合法的邮箱!", "info")
+                    flag = false;
+                }
+                
                 if (!flag) {
-                    this.verifyCode()
                     return false;
                 }
                 let params = {
                     username: username,
                     password: password,
-                    repassword: repassword,
+                    confirmPwd: repassword,
                     vCode: vCode,
                     vcodeID: this.vcodeID
                 }
-                this.$axios.post(global.apiUrl + '/signup', JSON.stringify(params)).then(resp => {
-                    this.$swal.fire("提示", resp.message, "info");
+                this.$axios.post(global.apiUrl + '/signup', params).then(resp => {
                     if (resp.result == true) {
+                        this.$swal.fire("提示", resp.message, "success");
                         setTimeout(() => {
                             this.$router.push("/signin")
                         }, 1500);
+                    } else {
+                        this.verifyCode();
+                        this.$swal.fire("提示", resp.message, "info");
                     }
                 }).catch(error => {
                     this.$swal.fire("错误", error, "error");
@@ -80,8 +89,8 @@
             },
             verifyCode() {
                 this.$axios.get(global.apiUrl + '/captcha?v=' + (Math.floor(Math.random() * 100))).then(resp => {
-                    this.$refs.vcodeImg.setAttribute("src", resp.img);
-                    this.vcodeID = resp.message;
+                    this.$refs.vcodeImg.setAttribute("src", 'data:image/png;base64,' + resp.data.img);
+                    this.vcodeID = resp.data.codeId;
                 }).catch(error => {
                     console.log(error);
                 });
@@ -195,6 +204,6 @@
         display: block;
         height: 66px;
         width: 64px;
-        background: url(https://static.web.sdo.com/copyright/pic/shengqu/shengqu-logo.png) no-repeat;
+        background: url(/static/icons/shengqu-logo.png) no-repeat;
     }
 </style>

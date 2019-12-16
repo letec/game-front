@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            sadasdasdas
+            
         </div>
     </div>
 </template>
@@ -20,15 +20,15 @@
             this.gameCode = this.$route.query.gameCode;
             this.tableID = this.$route.query.tableID;
             this.seat = this.$route.query.seat;
-            global.connectSocket();
+            this.connectSocket();
         },
         beforeDestroy() {
-            this.$axios.post(global.apiUrl + "/standup", JSON.stringify({
+            this.$axios.post(global.apiUrl + "/standup", {
                 oid: sessionStorage.getItem("onlineToken"),
                 gameCode: this.gameCode,
                 tableID: this.tableID,
                 seat: this.seat
-            }));
+            });
             window.socket.close();
             delete window.socket;
         },
@@ -38,6 +38,19 @@
                     console.log(evt.data);
                 }
             },
+            connectSocket() {
+                if (typeof window.socket == 'undefined') {
+                    window.socket = new WebSocket(global.websocketUrl);
+                    window.socket.onopen = () => {
+                        window.socket.send('{"sd":"s"}');
+                    };
+                    window.socket.onclose = () => {
+                        setTimeout(this.connectSocket(), 3000);
+                    };
+                    window.socket.onerror = (error) => {
+                    };
+                }
+            }
         }
     }
 </script>

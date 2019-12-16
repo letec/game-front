@@ -27,6 +27,7 @@
     </div>
 </template>
 <script>
+    import global from "../../logic/global"
     export default {
         data() {
             return {
@@ -64,6 +65,7 @@
                 }
             },
             quit() {
+                this.$axios.post(global.apiUrl + '/user/quit', {oid:sessionStorage.getItem('onlineToken')});
                 sessionStorage.clear();
                 window.location.href = document.domain;
             }

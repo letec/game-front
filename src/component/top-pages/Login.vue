@@ -41,21 +41,23 @@
                     return false;
                 }
                 if (!password.match(/^[a-zA-Z0-9]{6,16}$/)) {
-                    this.$swal.fire("提示", "请输入合法的密码!", "info")
+                    this.$swal.fire("提示", "请输入合法的密码!", "info");
                     return false;
                 }
                 let params = {
                     username: username,
                     password: password,
                 };
-                this.$axios.post(global.apiUrl + '/signin', JSON.stringify(params)).then(resp => {
-                    this.$swal.fire("提示", resp.message, "info");
+                this.$axios.post(global.apiUrl + '/signin', params).then(resp => {
                     if (resp.result == true) {
+                        this.$swal.fire("提示", resp.message, "success");
                         setTimeout(() => {
-                            sessionStorage.setItem("onlineToken", resp.oid);
+                            sessionStorage.setItem("onlineToken", resp.data.oid);
                             sessionStorage.setItem("username", username);
                             this.$router.push("/");
                         }, 1000);
+                    } else {
+                        this.$swal.fire("提示", resp.message, "info");
                     }
                 }).catch(error => {
                     this.$swal.fire("错误", error, "error");
@@ -165,6 +167,6 @@
         display: block;
         height: 66px;
         width: 64px;
-        background: url(https://static.web.sdo.com/copyright/pic/shengqu/shengqu-logo.png) no-repeat;
+        background: url(/static/icons/shengqu-logo.png) no-repeat;
     }
 </style>

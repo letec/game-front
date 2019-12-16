@@ -1,4 +1,5 @@
 const apiUrl = "http://192.168.44.128:9501"
+const websocketUrl = "http://192.168.44.128:9502";
 
 const gameConfig = {
     chess: {
@@ -94,20 +95,6 @@ function checkOnline() {
     return sessionStorage.getItem("onlineToken") != null && sessionStorage.getItem("username") != null;
 }
 
-function connectSocket() {
-    if (typeof window.socket == 'undefined') {
-        window.socket = new WebSocket("ws://localhost:8082/ws");
-        window.socket.onopen = () => {
-            window.socket.send('{"sd":"s"}');
-        };
-        window.socket.onclose = () => {
-            setTimeout(connectSocket(), 3000);
-        };
-        window.socket.onerror = (error) => {
-        };
-    }
-}
-
 function inArray(val, arr) {
     for (let i in arr) {
         if (arr[i] == val) {
@@ -117,4 +104,4 @@ function inArray(val, arr) {
     return false;
 }
 
-export default { gameConfig, apiUrl, checkOnline, connectSocket, inArray }
+export default { gameConfig, apiUrl, checkOnline, inArray }

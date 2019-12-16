@@ -6,6 +6,19 @@ const service = Axios.create({
     timeout: 3000
 });
 
+service.interceptors.request.use(
+    config => {
+        if (config.method == 'post') {
+            config.headers['Content-Type'] = 'application/json;charset=UTF-8';
+            config.data = JSON.stringify(config.data)
+        }
+        return config;
+    },
+    error => {
+      return Promise.reject(error.response);
+    }
+);
+
 service.interceptors.response.use(
     response => {
         if (response.data.result == false && response.data.message == "OFFLINE") {
@@ -20,6 +33,6 @@ service.interceptors.response.use(
         console.log(error);
         return Promise.reject(error)
     }
-)
+);
 
 export default { service };

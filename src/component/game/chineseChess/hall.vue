@@ -3,19 +3,16 @@
         <div class="col-md-12 hall-title">
             <marquee class="scroll_text">欢迎</marquee>
         </div>
-        <div class="left-panel col-md-2" :style="{'height':screenHeight-30+'px'}">
-            <v-jstree :data="gameList" @item-click="itemClick()"></v-jstree>
-        </div>
-        <div class="middle-panel col-md-7" :style="{'height':screenHeight-30+'px','background-color':'#05436C'}">
+        <div class="middle-panel col-md-9" :style="{'height':screenHeight-30+'px','background-color':'#05436C'}">
             <div v-for="(item,i) in tables" class="hall-table" v-bind:key="i">
-                <img @click="seatDown(item.ID, 'PlayerA')" :ref="'tables_'+i+'_A'" class="table-user" :src="item.PlayerAImg">
+                <img @click="seatDown(item.ID, 'USER_1')" :ref="'tables_'+i+'_1'" class="table-user" :src="item.PlayerAImg">
                 <img :ref="'tables_'+i+'_T'" class="table-table" :src="item.TableImg">
-                <img @click="seatDown(item.ID, 'PlayerB')" :ref="'tables_'+i+'_B'" class="table-user" :src="item.PlayerBImg">
+                <img @click="seatDown(item.ID, 'USER_2')" :ref="'tables_'+i+'_2'" class="table-user" :src="item.PlayerBImg">
             </div>
         </div>
         <div class="right-panel col-md-3" :style="{'height':screenHeight-30+'px'}">
             <div class="col-md-12">
-                <h4>在线: {{userList.length}}人</h4>
+                <!-- <h4>在线: {{userList.length}}人</h4> -->
             </div>
             <div id="user-list" class="col-md-12">
                 <table class="table table-default">
@@ -25,12 +22,12 @@
                         <th>胜负</th>
                         <th>状态</th>
                     </tr>
-                    <tr v-for="(item,u) in userList" v-bind:key="u">
+                    <!-- <tr v-for="(item,u) in userList" v-bind:key="u">
                         <td>{{item.UserName}}</td>
                         <td>{{item.Score}}</td>
                         <td>{{item.Win}} / {{item.Lose}}</td>
                         <td>{{userStatus[item.Status]}}</td>
-                    </tr>
+                    </tr> -->
                 </table>
             </div>
         </div>
@@ -45,7 +42,6 @@
                 screenHeight: document.documentElement.clientHeight,
                 tables: [],
                 gameList: [],
-                userList: [],
                 gameCode: "ChineseChess",
                 userStatus: ["空闲中", "准备中", "游戏中"],
                 dataTimer: ""
@@ -57,21 +53,6 @@
                 this.$router.push("/");
                 return;
             }
-            this.gameList = [];
-            for (let key in global.gameConfig) {
-                let obj = {
-                    text: global.gameConfig[key].type,
-                    value: key,
-                    children: []
-                };
-                for (let i in global.gameConfig[key].list) {
-                    obj.children.push({
-                        text: global.gameConfig[key].list[i].name,
-                        value: global.gameConfig[key].list[i].code
-                    });
-                }
-                this.gameList.push(obj);
-            }
             this.intoHall();
             this.dataTimer = setInterval(this.roomInfo, 5000)
         },
@@ -80,12 +61,12 @@
         },
         methods: {
             intoHall() {
-                this.$axios.post(global.apiUrl + "/intohall", JSON.stringify({
+                this.$axios.post(global.apiUrl + "/user/intohall", {
                     oid: sessionStorage.getItem("onlineToken"),
                     gameCode: this.gameCode
-                })).then(resp => {
-                    if (resp.data == "FAIL") {
-                        this.$swal.fire("提示", "进入房间失败!", "info");
+                }).then(resp => {
+                    if (resp.result == false) {
+                        this.$swal.fire("提示", "进入房间失败!", "error");
                         this.$router.push("/");
                         return;
                     }
@@ -111,27 +92,21 @@
                 }
             },
             roomInfo() {
-                this.$axios.post(global.apiUrl + "/hall", JSON.stringify({
-                    oid: sessionStorage.getItem("onlineToken"),
-                    gameCode: this.gameCode
-                })).then(resp => {
+                let oid = sessionStorage.getItem("onlineToken");
+                this.$axios.post(global.apiUrl + "/hall", {oid: oid, gameCode: this.gameCode}).then(resp => {
                     if (resp.result == true) {
-                        this.userList = [];
-                        for (let u in resp.data.users) {
-                            this.userList.push(resp.data.users[u]);
-                        }
                         this.tables = [];
                         for (let i = 0; i < resp.data.tables.length; i++) {
                             let obj = resp.data.tables[i];
-                            obj.PlayerAImg = obj.PlayerA == "" ? require(
+                            obj.PlayerAImg = obj.USER_1.userId == "" ? require(
                                 '../../../assets/images/hall/nobody.png') : require(
-                                '../../../assets/avatar/' + this.displayAvatar(obj.PlayerA) + '.jpg');
+                                '../../../assets/avatar/' + obj.USER_1);
                             obj.TableImg = obj.Status == "0" ? require(
                                 '../../../assets/images/hall/chessready.png') : require(
                                 "../../../assets/images/hall/chessgaming.png");
-                            obj.PlayerBImg = obj.PlayerB == "" ? require(
+                            obj.PlayerBImg = obj.USER_2.userId == "" ? require(
                                 '../../../assets/images/hall/nobody.png') : require(
-                                '../../../assets/avatar/' + this.displayAvatar(obj.PlayerB) + '.jpg');
+                                '../../../assets/avatar/' + obj.USER_2);
                             this.tables.push(obj);
                         }
                     }
@@ -140,12 +115,12 @@
                 });
             },
             seatDown(tableID, seat) {
-                this.$axios.post(global.apiUrl + "/seatdown", JSON.stringify({
+                this.$axios.post(global.apiUrl + "/table/seatdown", {
                     oid: sessionStorage.getItem("onlineToken"),
                     gameCode: this.gameCode,
                     tableID: tableID,
                     seat: seat
-                })).then(resp => {
+                }).then(resp => {
                     this.$router.push({
                         path: "/chinessChessTable",
                         query: { gameCode: this.gameCode, tableID: tableID, seat: seat}
@@ -155,14 +130,6 @@
                     console.log(error);
                 });
             },
-            displayAvatar(userid){
-                for (let u in this.userList) {
-                    if (this.userList[u].UserID == userid) {
-                        return this.userList[u].Avatar;
-                    }
-                }
-                return "";
-            }
         }
     }
 </script>
@@ -177,35 +144,26 @@
         line-height: 30px;
     }
 
-    .left-panel,
     .middle-panel,
     .right-panel {
         float: left;
         background-color: #f0f8f6;
     }
 
-    .left-panel {
-        padding: 1% 0 0 1%;
-    }
-
     .middle-panel {
         padding: 1.5% 0 0 1.5%;
+        overflow-y: auto;
     }
 
-    .left_game_title {
-        font-size: 16px;
-        margin-left: 3%;
-    }
-
-    .left_game_title a:hover {
-        text-decoration: none;
+    .middle-panel::-webkit-scrollbar {
+        display: block;
     }
 
     .hall-table {
-        width: 20%;
+        width: 14%;
         float: left;
-        height: 9.1%;
-        margin-bottom: 4.2%;
+        height: 9%;
+        margin-bottom: 4%;
     }
 
     .hall-right h4 {
