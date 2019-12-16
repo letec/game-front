@@ -17,13 +17,13 @@
             }
         },
         created() {
-            this.gameCode = this.$route.query.gameCode;
-            this.tableID = this.$route.query.tableID;
-            this.seat = this.$route.query.seat;
+            this.gameCode = this.$route.params.gameCode;
+            this.tableID = this.$route.params.tableID;
+            this.seat = this.$route.params.seat;
             this.connectSocket();
         },
         beforeDestroy() {
-            this.$axios.post(global.apiUrl + "/standup", {
+            this.$axios.post(global.apiUrl + "/table/standup", {
                 oid: sessionStorage.getItem("onlineToken"),
                 gameCode: this.gameCode,
                 tableID: this.tableID,
@@ -42,7 +42,7 @@
                 if (typeof window.socket == 'undefined') {
                     window.socket = new WebSocket(global.websocketUrl);
                     window.socket.onopen = () => {
-                        window.socket.send('{"sd":"s"}');
+                        window.socket.send('');
                     };
                     window.socket.onclose = () => {
                         setTimeout(this.connectSocket(), 3000);

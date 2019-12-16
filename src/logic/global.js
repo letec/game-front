@@ -1,5 +1,5 @@
 const apiUrl = "http://192.168.44.128:9501"
-const websocketUrl = "http://192.168.44.128:9502";
+const websocketUrl = "ws://192.168.44.128:9502";
 
 const gameConfig = {
     chess: {
@@ -104,4 +104,4 @@ function inArray(val, arr) {
     return false;
 }
 
-export default { gameConfig, apiUrl, checkOnline, inArray }
+export default { gameConfig, apiUrl, websocketUrl, checkOnline, inArray }

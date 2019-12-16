@@ -100,13 +100,13 @@
                             let obj = resp.data.tables[i];
                             obj.PlayerAImg = obj.USER_1.userId == "" ? require(
                                 '../../../assets/images/hall/nobody.png') : require(
-                                '../../../assets/avatar/' + obj.USER_1);
+                                '../../../assets/avatar/' + obj.USER_1.avatar);
                             obj.TableImg = obj.Status == "0" ? require(
                                 '../../../assets/images/hall/chessready.png') : require(
                                 "../../../assets/images/hall/chessgaming.png");
                             obj.PlayerBImg = obj.USER_2.userId == "" ? require(
                                 '../../../assets/images/hall/nobody.png') : require(
-                                '../../../assets/avatar/' + obj.USER_2);
+                                '../../../assets/avatar/' + obj.USER_2.avatar);
                             this.tables.push(obj);
                         }
                     }
@@ -121,10 +121,14 @@
                     tableID: tableID,
                     seat: seat
                 }).then(resp => {
-                    this.$router.push({
-                        path: "/chinessChessTable",
-                        query: { gameCode: this.gameCode, tableID: tableID, seat: seat}
-                    });
+                    if (resp.result == true) {
+                        this.$router.push({
+                            path: "/chinessChessTable",
+                            params: { gameCode: this.gameCode, tableID: tableID, seat: seat}
+                        });
+                    } else {
+                        this.$swal.fire("提示", resp.message, "error");
+                    }
                     console.log(resp);
                 }).catch(error => {
                     console.log(error);
