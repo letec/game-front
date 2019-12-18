@@ -98,11 +98,11 @@
                         this.tables = [];
                         for (let i = 0; i < resp.data.tables.length; i++) {
                             let obj = resp.data.tables[i];
-                            obj.PlayerAImg = obj.USERS[0].userId == "" ? '/static/images/game/chineseChess/hall/nobody.png' : 
+                            obj.PlayerAImg = obj.USERS[0].userId == "" ? '/static/images/avatar/nobody.png' : 
                             '/static/images/avatar/' + obj.USERS[0].avatar;
                             obj.TableImg = obj.Status == "0" ? 'static/images/game/chineseChess/hall/chessready.png' : 
                             'static/images/game/chineseChess/hall/chessgaming.png';
-                            obj.PlayerBImg = obj.USERS[1].userId == "" ? '/static/images/game/chineseChess/hall/nobody.png' : 
+                            obj.PlayerBImg = obj.USERS[1].userId == "" ? '/static/images/avatar/nobody.png' : 
                             '/static/images/avatar/' + obj.USERS[1].avatar;
                             this.tables.push(obj);
                         }

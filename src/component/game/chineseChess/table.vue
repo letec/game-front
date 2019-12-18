@@ -43,8 +43,8 @@
                                 <td colspan="2"><span></span></td>
                             </tr>
                             <tr>
-                                <td><button class="btn btn-primary">准 备</button></td>
-                                <td><button class="btn btn-danger">离 开</button></td>
+                                <td><button v-if="readyBtnText() != ''" @click="readyPlay()" class="btn btn-primary">{{ readyBtnText() }}</button></td>
+                                <td><button v-if="this.myStatus == 0" @click="backToHall()" class="btn btn-danger">离 开</button></td>
                             </tr>
                         </table>
                     </div>
@@ -66,6 +66,7 @@
     export default {
         data() {
             return {
+                connector: false,
                 blackChessName: {chariot:"车", knight:"马", elephant:"象", guard: "士", king: "帅", soldier:"兵", gunner:"炮"},
                 redChessName: {chariot:"車", knight:"馬", elephant:"相", guard: "仕", king: "將", soldier:"兵", gunner:"砲"},
                 screenHeight: document.documentElement.clientHeight,
@@ -79,9 +80,9 @@
                 myStatus: 0,
                 myColor: 'redChess',
                 myWinLose : '',
-                myAvatar: '/static/images/game/chineseChess/hall/nobody.png',
+                myAvatar: '',
                 enemyName: '',
-                enemyAvatar: '/static/images/game/chineseChess/hall/nobody.png',
+                enemyAvatar: '/static/images/avatar/nobody.png',
                 enemyStatus: '',
                 enemyWinLose: ''
             }
@@ -97,37 +98,17 @@
             this.putChess();
         },
         beforeDestroy() {
-            window.socket.close();
-            delete window.socket;
+            this.connector.close();
+            this.connector = false;
         },
         methods: {
             bindEvent() {
-                window.socket.onmessage = (evt) => {
+                this.connector.onmessage = (evt) => {
                     console.log(evt.data);
                 }
             },
             seatDown() {
-                // let timerInterval;
-                // this.loading = this.$swal.fire({
-                //     title: '加载中.',
-                //     html: '正在连接到服务器...',
-                //     timer: 2500,
-                //     backdrop: `
-                //         rgba(0,0,123,0.4)
-                //         url("/static/gif/nyan-cat.gif")
-                //         left top
-                //         no-repeat
-                //     `,
-                //     onBeforeOpen: () => {
-                //         this.$swal.showLoading();
-                //     },
-                //     onClose: () => {
-                //         clearInterval(timerInterval);
-                //     }
-                // }).then((result) => {
-                //     clearInterval(timerInterval);
-                // });
-                window.socket.send(JSON.stringify({
+                this.connector.send(JSON.stringify({
                     oid: this.oid,
                     action: 'SEATDOWN',
                     gameCode: this.gameCode,
@@ -144,7 +125,6 @@
                 }
             },
             showStatus(status) {
-                console.log(status)
                 if (status === 0) {
                     return '就坐';
                 } else if (status === 1) {
@@ -153,6 +133,15 @@
                     return '游戏中';
                 }
                 return '';
+            },
+            readyBtnText() {
+                if (this.myStatus === 0) {
+                    return '准 备';
+                } else if (this.myStatus === 1) {
+                    return '取消准备';
+                } else if (this.myStatus === 2) {
+                    return '';
+                }
             },
             putChess() {
                 let myChess = [];
@@ -236,15 +225,31 @@
                 chess = '<div class="chessObject '+this.myColor+'">'+myChess.chariot+'</div>';
                 document.querySelector('#position_10_9').innerHTML = chess;
             },
-            tableInfo(table){
+            readyPlay() {
+                let data = {
+                    oid: this.oid,
+                    action: 'GAME_ACTION',
+                    data: { GAME_ACTION: 'READY' }
+                };
+                this.connector.send(JSON.stringify(data));
+            },
+            backToHall() {
+                this.connector.close();
+                delete this.connector;
+                this.$router.push({
+                    'name': 'chinessChess'
+                });
+            },
+            tableInfo(table) {
                 table.USERS.forEach(item => {
+                    let avatar = item.avatar ? item.avatar : 'nobody.png';
                     if (item.username == this.myName) {
-                        this.myAvatar = '/static/images/avatar/' + item.avatar;
+                        this.myAvatar = '/static/images/avatar/' + avatar;
                         this.myStatus = item.status;
                         this.myWinLose = '';
                     } else {
                         this.enemyName = item.username;
-                        this.enemyAvatar = '/static/images/avatar/' + item.avatar;
+                        this.enemyAvatar = '/static/images/avatar/' + avatar;
                         this.enemyStatus = item.status;
                         this.enemyWinLose = '';
                     }
@@ -268,6 +273,8 @@
                         case 'TABLE_UPDATE':
                             this.tableInfo(data.data.table);
                             break;
+                        case 'READY':
+                            break;
                         default:
                             console.log(data.message);
                             break;
@@ -277,19 +284,19 @@
                 }
             },
             connectSocket() {
-                if (typeof window.socket == 'undefined') {
-                    window.socket = new WebSocket(global.websocketUrl);
-                    window.socket.onmessage = (message) => {
+                if (this.connector == false) {
+                    this.connector = new WebSocket(global.websocketUrl);
+                    this.connector.onmessage = (message) => {
                         this.actions(message);
                     };
-                    window.socket.onopen = () => {
+                    this.connector.onopen = () => {
                         this.seatDown();
                     };
-                    window.socket.onclose = () => {
-                        delete window.socket;
+                    this.connector.onclose = () => {
+                        delete this.connector;
                         console.log('您已断开连接!');
                     };
-                    window.socket.onerror = (error) => {
+                    this.connector.onerror = (error) => {
                     };
                 }
             }
@@ -301,11 +308,6 @@
 
     .avatarDiv {
         height: 50px;
-    }
-
-    #userPanel p {
-        height: 50px;
-        line-height: 40px;
     }
 
     #userPanel .avatar {
