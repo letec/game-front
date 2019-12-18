@@ -10,26 +10,43 @@
             </div>
             <div id="rightPanel" class="col-md-5">
                 <div id="userPanel" class="col-md-12">
-                    <div id="myInfoPanel" class="col-md-6">
-                        <p><img class="avatar" :src="myAvatar" alt=""></p>
-                        <p class="username">{{myName}}</p>
-                        <p>{{ showStatus(myStatus) }}</p>
-                        <p class="username">{{myWinLose}}</p>
-                        <p>我方用时: <span></span></p>
-                    </div>
-                    <div id="enemyInfoPanel" class="col-md-6">
-                        <img class="avatar" :src="enemyAvatar" alt="">
-                        <p>{{enemyName}}</p>
-                        <p>{{ showStatus(enemyStatus) }}</p>
-                        <p>{{enemyWinLose}}</p>
-                        <p>对方用时: <span></span></p>
-                    </div>
-                    <div id="totalTimePanel" class="col-md-12">
-                        局面时间:<span></span>
-                    </div>
-                    <div id="gamePanel" class="col-md-12">
-                        <button class="btn btn-primary">准 备</button>
-                        <button class="btn btn-danger">离 开</button>
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><h3>中国象棋</h3></div>
+                        <div class="panel-body">
+                            <p>桌面信息</p>
+                        </div>
+                        <table class="table">
+                            <tr>
+                                <td><div class="avatarDiv"><img class="avatar" :src="myAvatar" alt=""></div></td>
+                                <td><img class="avatar" :src="enemyAvatar" alt=""></td>
+                            </tr>
+                            <tr>
+                                <td><p class="username"><strong>{{myName}}</strong></p></td>
+                                <td><p>{{enemyName}}</p></td>
+                            </tr>
+                            <tr>
+                                <td><p>{{ showStatus(myStatus) }}</p></td>
+                                <td><p>{{ showStatus(enemyStatus) }}</p></td>
+                            </tr>
+                            <tr>
+                                <td><p><strong>{{myWinLose}}</strong></p></td>
+                                <td><p><strong>{{enemyWinLose}}</strong></p></td>
+                            </tr>
+                            <tr>
+                                <td><p>我方用时: <span></span></p></td>
+                                <td><p>对方用时: <span></span></p></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">局面时间:</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><span></span></td>
+                            </tr>
+                            <tr>
+                                <td><button class="btn btn-primary">准 备</button></td>
+                                <td><button class="btn btn-danger">离 开</button></td>
+                            </tr>
+                        </table>
                     </div>
                     <div id="chatPanel" class="col-md-12">
                         <div id="chatContent" class="col-md-12">
@@ -220,7 +237,18 @@
                 document.querySelector('#position_10_9').innerHTML = chess;
             },
             tableInfo(table){
-                table
+                table.USERS.forEach(item => {
+                    if (item.username == this.myName) {
+                        this.myAvatar = '/static/images/avatar/' + item.avatar;
+                        this.myStatus = item.status;
+                        this.myWinLose = '';
+                    } else {
+                        this.enemyName = item.username;
+                        this.enemyAvatar = '/static/images/avatar/' + item.avatar;
+                        this.enemyStatus = item.status;
+                        this.enemyWinLose = '';
+                    }
+                });
             },
             actions(message){
                 try {
@@ -271,8 +299,12 @@
 
 <style scoped>
 
+    .avatarDiv {
+        height: 50px;
+    }
+
     #userPanel p {
-        min-height: 40px;
+        height: 50px;
         line-height: 40px;
     }
 
@@ -288,27 +320,11 @@
         padding: 35px 0 0 120px;
     }
 
-    #gamePanel {
-        height: 100px;
-    }
-
-    #gamePanel button {
-        width: 80px;
-        margin-left: 10px;
-    }
-
     #userPanel {
         text-align: center;
         padding: 0;
         height: 220px;
         padding: 50px;
-    }
-
-    #myInfoPanel, #enemyInfoPanel, #totalTimePanel, #gamePanel, #chatPanel {
-        float: left;
-        padding: 0;
-        height: auto;
-        margin-top: 10px;
     }
 
     #chatPanel {
