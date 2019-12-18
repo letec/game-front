@@ -82,9 +82,9 @@
             return {
                 swiperHeight: document.documentElement.clientHeight - 90 + 'px',
                 imgList: [
-                    require('./assets/images/website/wuzi_b_1.jpg'),
-                    require('./assets/images/website/chess_b_1.jpg'),
-                    require('./assets/images/website/dizhu_b_2.jpg')
+                    'static/images/website/wuzi_b_1.jpg',
+                    'static/images/website/chess_b_1.jpg',
+                    'static/images/website/dizhu_b_2.jpg'
                 ],
                 currentMenu: -1,
                 menuTop: document.documentElement.clientHeight - 850 + 'px',
@@ -150,7 +150,7 @@
     .menu_link {
         box-sizing: border-box;
         text-align: center;
-        background-image: url(/static/icons/menu_bg.png);
+        background-image: url(/static/images/icons/menu_bg.png);
     }
 
     .menu_wrap ul li a:hover {
@@ -236,10 +236,10 @@
         vertical-align: middle;
     }
     .drop_box .drop_main .drop_b .type i.icon_1{
-        background: url(/static/icons/icon.png) no-repeat left -40px;
+        background: url(/static/images/icons/icon.png) no-repeat left -40px;
     }
     .drop_box .drop_main .drop_b .type i.icon_2{
-        background: url(/static/icons/icon.png) no-repeat left -60px;
+        background: url(/static/images/icons/icon.png) no-repeat left -60px;
     }
 
     .drop_box .arrow {
@@ -248,7 +248,7 @@
         background-repeat: no-repeat;
         width: 12px;
         height: 24px;
-        background-image: url(/static/icons/arrow_1.png);
+        background-image: url(/static/images/icons/arrow_1.png);
     }
 
     .drop_box .drop_main {
@@ -267,7 +267,7 @@
         zoom: 1;
         margin-top: 6px;
         min-height: 380px;
-        background-image: url(/static/icons/bg_tra.png);
+        background-image: url(/static/images/icons/bg_tra.png);
     }
 
     .drop_box .drop_main .drop_t li {
@@ -313,7 +313,7 @@
         position: absolute;
         bottom: 13px;
         right: 10px;
-        background-image: url(/static/icons/btn_go.png);
+        background-image: url(/static/images/icons/btn_go.png);
     }
 
     .drop_box .drop_main .drop_b .type {

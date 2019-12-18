@@ -3,7 +3,7 @@
         <div class="row header">
             <div class="header-logo">
                 <a class="logo">
-                    <img src="/static/icons/shengqu-logo.png">
+                    <img src="/static/images/icons/shengqu-logo.png">
                 </a>
             </div>
             <div class="header-menu">
@@ -19,8 +19,8 @@
                     <router-link to="/signup">注册</router-link>
                 </div>
                 <div class="header-login" :style="{'display':hasLogin?'block':'none'}">
-                    <a href="javascript:void(0)">{{username}}</a>
-                    <a href="javascript:void(0)" @click="quit()">退出</a>
+                    <a @click="userSetting()">{{username}}</a>
+                    <a @click="quit()">退出</a>
                 </div>
             </div>
         </div>
@@ -63,6 +63,11 @@
                         });
                         break;
                 }
+            },
+            userSetting() {
+                this.$router.push({
+                    name: 'settings'
+                });
             },
             quit() {
                 this.$axios.post(global.apiUrl + '/user/quit', {oid:sessionStorage.getItem('onlineToken')});

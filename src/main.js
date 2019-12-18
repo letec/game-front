@@ -17,6 +17,7 @@ Vue.prototype.$swal = swal;
 
 import Login from './component/top-pages/Login.vue'
 import Reg from './component/top-pages/Reg.vue'
+import Settings from './component/top-pages/Settings.vue'
 import About from "./component/top-pages/About.vue"
 
 import Header from "./component/public/header.vue"
@@ -28,12 +29,13 @@ import ChinessChess from "./component/game/chineseChess/hall.vue"
 import ChinessChessTable from "./component/game/chineseChess/table.vue"
 
 const routes = [
-    { path: '/', component: App },
-    { path: '/signin', component: Login },
-    { path: '/signup', component: Reg },
-    { path: '/about', component: About },
-    { path: '/chinessChess', component: ChinessChess },
-    { path: '/chinessChessTable', component: ChinessChessTable },
+    { name: 'index', path: '/', component: App },
+    { name: 'settings', path: '/settings', component: Settings },
+    { name: 'signin', path: '/signin', component: Login },
+    { name: 'signup', path: '/signup', component: Reg },
+    { name: 'about', path: '/about', component: About },
+    { name: 'chinessChess', path: '/chinessChess', component: ChinessChess },
+    { name: 'chinessChessTable', path: '/chinessChessTable', component: ChinessChessTable },
 ]
 
 const router = new VueRouter({

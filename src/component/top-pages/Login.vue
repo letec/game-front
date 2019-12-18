@@ -167,6 +167,6 @@
         display: block;
         height: 66px;
         width: 64px;
-        background: url(/static/icons/shengqu-logo.png) no-repeat;
+        background: url(/static/images/icons/shengqu-logo.png) no-repeat;
     }
 </style>

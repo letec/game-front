@@ -1,13 +1,13 @@
 <template>
-    <div id="hall_main">
+    <div>
         <div class="col-md-12 hall-title">
             <marquee class="scroll_text">欢迎</marquee>
         </div>
         <div class="middle-panel col-md-9" :style="{'height':screenHeight-30+'px','background-color':'#05436C'}">
             <div v-for="(item,i) in tables" class="hall-table" v-bind:key="i">
-                <img @click="seatDown(item.ID, 'USER_1')" :ref="'tables_'+i+'_1'" class="table-user" :src="item.PlayerAImg">
+                <img @click="seatDown(i+1, '1')" :ref="'tables_'+i+'_1'" class="table-user" :src="item.PlayerAImg">
                 <img :ref="'tables_'+i+'_T'" class="table-table" :src="item.TableImg">
-                <img @click="seatDown(item.ID, 'USER_2')" :ref="'tables_'+i+'_2'" class="table-user" :src="item.PlayerBImg">
+                <img @click="seatDown(i+1, '2')" :ref="'tables_'+i+'_2'" class="table-user" :src="item.PlayerBImg">
             </div>
         </div>
         <div class="right-panel col-md-3" :style="{'height':screenHeight-30+'px'}">
@@ -98,15 +98,12 @@
                         this.tables = [];
                         for (let i = 0; i < resp.data.tables.length; i++) {
                             let obj = resp.data.tables[i];
-                            obj.PlayerAImg = obj.USER_1.userId == "" ? require(
-                                '../../../assets/images/hall/nobody.png') : require(
-                                '../../../assets/avatar/' + obj.USER_1.avatar);
-                            obj.TableImg = obj.Status == "0" ? require(
-                                '../../../assets/images/hall/chessready.png') : require(
-                                "../../../assets/images/hall/chessgaming.png");
-                            obj.PlayerBImg = obj.USER_2.userId == "" ? require(
-                                '../../../assets/images/hall/nobody.png') : require(
-                                '../../../assets/avatar/' + obj.USER_2.avatar);
+                            obj.PlayerAImg = obj.USERS[0].userId == "" ? 'static/images/website/game/chineseChess/hall/nobody.png' : 
+                            '/static/images/avatar/' + obj.USERS[0].avatar;
+                            obj.TableImg = obj.Status == "0" ? 'static/images/website/game/chineseChess/hall/chessready.png' : 
+                            'static/images/website/game/chineseChess/hall/chessgaming.png';
+                            obj.PlayerBImg = obj.USERS[1].userId == "" ? 'static/images/website/game/chineseChess/hall/nobody.png' : 
+                            '/static/images/avatar/' + obj.USERS[1].avatar;
                             this.tables.push(obj);
                         }
                     }
@@ -123,7 +120,7 @@
                 }).then(resp => {
                     if (resp.result == true) {
                         this.$router.push({
-                            path: "/chinessChessTable",
+                            name: "chinessChessTable",
                             params: { gameCode: this.gameCode, tableID: tableID, seat: seat}
                         });
                     } else {
