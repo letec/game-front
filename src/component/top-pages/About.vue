@@ -10,7 +10,7 @@
                     简介<span>INTRODUCTION</span>
                 </div>
                 <div class="about_intro">
-                    <div class="img"><img src="/static/quwan/shengqugames_intro.jpg" alt=""></div>
+                    <div class="img"><img src="/static/images/quwan/shengqugames_intro.jpg" alt=""></div>
                     <div class="intro">
                         <p>
                             趣玩是全球领先的网络游戏开发商、运营商和发行商。立足“科技赋能文化”的新文化产业定位，趣玩全面推进“精品化”、“全球化”、“新文化”三大战略，以科技为骨、文化为翼，用科技激活文化的精髓，致力于成为一家打造极致互动体验的科技文化企业。
@@ -107,7 +107,7 @@
         text-align: center;
         width: 100%;
         height: 190px;
-        background-image: url(/static/quwan/about_banner.png);
+        background-image: url(/static/images/quwan/about_banner.png);
     }
 
     .banner_main h3 {

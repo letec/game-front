@@ -28,6 +28,7 @@
                         <input type="password" class="form-control" id="confirmPassword" ref="confirmPassword" placeholder="不修改无需填写">
                     </div>
                     <div class="form-group">
+                        <button id="cancelBtn" @click="back()" type="button" class="btn btn-info">取 消</button>
                         <button id="btnSubmit" @click="submit()" type="button" class="btn btn-success">确 定</button>
                     </div>
                 </form>
@@ -56,7 +57,8 @@
         float: left;
     }
 
-    #btnSubmit {
+    #btnSubmit, #cancelBtn {
+        margin-left: 10px;
         width: 80px;
         float: right;
     }
@@ -150,6 +152,9 @@
                 }).catch(error => {
                     console.log(error);
                 })
+            },
+            back() {
+                this.$router.push('/');
             }
         }
     }

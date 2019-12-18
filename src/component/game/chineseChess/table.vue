@@ -11,29 +11,33 @@
             <div id="rightPanel" class="col-md-5">
                 <div id="userPanel" class="col-md-12">
                     <div id="myInfoPanel" class="col-md-6">
-                        <p><img src="" alt=""></p>
-                        <p></p>
-                        <p></p>
-                        <p></p>
+                        <p><img class="avatar" :src="myAvatar" alt=""></p>
+                        <p class="username">{{myName}}</p>
+                        <p>{{ showStatus(myStatus) }}</p>
+                        <p class="username">{{myWinLose}}</p>
+                        <p>我方用时: <span></span></p>
                     </div>
                     <div id="enemyInfoPanel" class="col-md-6">
-                        <p><img src="" alt=""></p>
-                        <p></p>
-                        <p></p>
-                        <p></p>
+                        <img class="avatar" :src="enemyAvatar" alt="">
+                        <p>{{enemyName}}</p>
+                        <p>{{ showStatus(enemyStatus) }}</p>
+                        <p>{{enemyWinLose}}</p>
+                        <p>对方用时: <span></span></p>
                     </div>
-                </div>
-                <div id="gamePanel" class="col-md-12">
-                    <span>时间</span>
-                    <button>准备</button>
-                    <button>离开</button>
-                </div>
-                <div id="chatPanel" class="col-md-12">
-                    <div id="chatContent" class="col-md-12">
+                    <div id="totalTimePanel" class="col-md-12">
+                        局面时间:<span></span>
+                    </div>
+                    <div id="gamePanel" class="col-md-12">
+                        <button class="btn btn-primary">准 备</button>
+                        <button class="btn btn-danger">离 开</button>
+                    </div>
+                    <div id="chatPanel" class="col-md-12">
+                        <div id="chatContent" class="col-md-12">
 
+                        </div>
+                        <textarea class="form-control" id="sendContent"></textarea>
+                        <button id="sendBtn" class="btn btn-primary">发 送</button>
                     </div>
-                    <textarea class="form-control" id="sendContent"></textarea>
-                    <button id="sendBtn" class="btn btn-primary">发 送</button>
                 </div>
             </div>
         </div>
@@ -45,8 +49,8 @@
     export default {
         data() {
             return {
-                redChessName: {chariot:"车", knight:"马", elephant:"象", guard: "士", king: "帅", soldier:"兵", gunner:"炮"},
-                blackChessName: {chariot:"車", knight:"馬", elephant:"相", guard: "仕", king: "將", soldier:"兵", gunner:"砲"},
+                blackChessName: {chariot:"车", knight:"马", elephant:"象", guard: "士", king: "帅", soldier:"兵", gunner:"炮"},
+                redChessName: {chariot:"車", knight:"馬", elephant:"相", guard: "仕", king: "將", soldier:"兵", gunner:"砲"},
                 screenHeight: document.documentElement.clientHeight,
                 panelMap: [],
                 oid: sessionStorage.getItem("onlineToken"),
@@ -54,7 +58,15 @@
                 tableID: "",
                 seat: "",
                 loading: null,
-                myColor: 'redChess'
+                myName: sessionStorage.getItem("username"),
+                myStatus: 0,
+                myColor: 'redChess',
+                myWinLose : '',
+                myAvatar: '/static/images/game/chineseChess/hall/nobody.png',
+                enemyName: '',
+                enemyAvatar: '/static/images/game/chineseChess/hall/nobody.png',
+                enemyStatus: '',
+                enemyWinLose: ''
             }
         },
         created() {
@@ -68,6 +80,7 @@
             this.putChess();
         },
         beforeDestroy() {
+            window.socket.close();
             delete window.socket;
         },
         methods: {
@@ -105,7 +118,7 @@
                     seat: this.seat,
                 }));
             },
-            drawPanel(){
+            drawPanel() {
                 this.panelMap = [];
                 for (let r = 1; r <= 10; r++) {
                     for (let c = 1; c <= 9; c++) {
@@ -113,7 +126,18 @@
                     }
                 }
             },
-            putChess(){
+            showStatus(status) {
+                console.log(status)
+                if (status === 0) {
+                    return '就坐';
+                } else if (status === 1) {
+                    return '准备';
+                } else if (status === 2) {
+                    return '游戏中';
+                }
+                return '';
+            },
+            putChess() {
                 let myChess = [];
                 let enemyChess = [];
                 let enemyColor = '';
@@ -247,36 +271,48 @@
 
 <style scoped>
 
+    #userPanel p {
+        min-height: 40px;
+        line-height: 40px;
+    }
+
+    #userPanel .avatar {
+        width: 50px;
+    }
+
+    #userPanel .username {
+        font-size: 16px;
+    }
+
     #chineseChessTableMain {
         padding: 35px 0 0 120px;
     }
 
     #gamePanel {
-        border: 1px solid green;
         height: 100px;
     }
 
+    #gamePanel button {
+        width: 80px;
+        margin-left: 10px;
+    }
+
     #userPanel {
+        text-align: center;
         padding: 0;
-        height: 400px;
-        border: 1px solid green;
+        height: 220px;
+        padding: 50px;
     }
 
-    #myInfoPanel {
+    #myInfoPanel, #enemyInfoPanel, #totalTimePanel, #gamePanel, #chatPanel {
         float: left;
         padding: 0;
-        height: 100%
-    }
-
-    #enemyInfoPanel {
-        float: left;
-        padding: 0;
-        height: 100%
+        height: auto;
+        margin-top: 10px;
     }
 
     #chatPanel {
         height: 400px;
-        border: 1px solid green;
     }
 
     #chatContent {
@@ -314,7 +350,7 @@
     #chessPanel {
         width: 769.5px;
         height: 855px;
-        background-image: url(/static/game/chineseChess/panel.jpg);
+        background-image: url(/static/images/game/chineseChess/panel.jpg);
         background-size: cover;
     }
 
@@ -329,7 +365,7 @@
 
     @font-face {
         font-family: 'yanti';
-        src: url(/static/game/chineseChess/yanti.woff2);
+        src: url(/static/images/game/chineseChess/yanti.woff2);
     }
 
     #chineseChessTableMain #chessPanel .chessObject {
@@ -342,6 +378,7 @@
         border-radius: 50px;
         margin: 10px 0 0 10px;
         font-family: "yanti";
+        cursor: pointer;
     }
 
     #chineseChessTableMain #chessPanel .redChess {

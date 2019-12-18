@@ -51,15 +51,15 @@
                     flag = false;
                 }
                 if (!password.match(/^[a-zA-Z0-9]{6,16}$/)) {
-                    this.$swal.fire("提示", "请输入合法的密码!", "info")
+                    this.$swal.fire("提示", "请输入合法的密码!", "info");
                     flag = false;
                 }
                 if (password != repassword) {
-                    this.$swal.fire("提示", "两次输入的密码不一致!", "info")
+                    this.$swal.fire("提示", "两次输入的密码不一致!", "info");
                     flag = false;
                 }
                 if (email != '' && !email.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/)) {
-                    this.$swal.fire("提示", "请输入合法的邮箱!", "info")
+                    this.$swal.fire("提示", "请输入合法的邮箱!", "info");
                     flag = false;
                 }
                 
@@ -77,7 +77,7 @@
                     if (resp.result == true) {
                         this.$swal.fire("提示", resp.message, "success");
                         setTimeout(() => {
-                            this.$router.push("/signin")
+                            this.$router.push("/signin");
                         }, 1500);
                     } else {
                         this.verifyCode();
