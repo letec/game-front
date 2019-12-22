@@ -29,22 +29,30 @@
                                 <td><p>{{ showStatus(enemyStatus) }}</p></td>
                             </tr>
                             <tr>
-                                <td><p><strong>{{myWinLose}}</strong></p></td>
-                                <td><p><strong>{{enemyWinLose}}</strong></p></td>
+                                <td><p><strong>{{ myWinLose }}</strong></p></td>
+                                <td><p><strong>{{ enemyWinLose }}</strong></p></td>
                             </tr>
                             <tr>
-                                <td><p>我方用时: <span></span></p></td>
-                                <td><p>对方用时: <span></span></p></td>
+                                <td><p>我方用时: <span>{{ timeFormat(myUsedTime) }}</span></p></td>
+                                <td><p>对方用时: <span>{{ timeFormat(enemyUsedTime) }}</span></p></td>
                             </tr>
                             <tr>
-                                <td colspan="2">局面时间:</td>
+                                <td colspan="2">局面时间: <span> {{ timeFormat(gamingTime) }} </span></td>
                             </tr>
                             <tr>
                                 <td colspan="2"><span></span></td>
                             </tr>
                             <tr>
-                                <td><button v-if="readyBtnText() != ''" @click="readyPlay()" class="btn btn-primary">{{ readyBtnText() }}</button></td>
-                                <td><button v-if="this.myStatus == 0" @click="backToHall()" class="btn btn-danger">离 开</button></td>
+                                <td style="width:50%;">
+                                    <div style="height:38px">
+                                        <button v-show="tableStatus==0" @click="readyPlay()" class="opBtn btn btn-primary">{{ readyBtnText() }}</button>
+                                    </div>
+                                </td>
+                                <td style="width:50%;">
+                                    <div style="height:38px">
+                                        <button v-show="myStatus==0" @click="backToHall()" class="opBtn btn btn-danger">离 开</button>
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -74,6 +82,7 @@
                 oid: sessionStorage.getItem("onlineToken"),
                 gameCode: "",
                 tableID: "",
+                tableStatus: 0,
                 seat: "",
                 loading: null,
                 myName: sessionStorage.getItem("username"),
@@ -81,10 +90,14 @@
                 myColor: 'redChess',
                 myWinLose : '',
                 myAvatar: '',
+                myUsedTime: 0,
                 enemyName: '',
                 enemyAvatar: '/static/images/avatar/nobody.png',
                 enemyStatus: '',
-                enemyWinLose: ''
+                enemyWinLose: '',
+                enemyUsedTime: 0,
+                gamingTime: 0,
+                selectedChess: null,
             }
         },
         created() {
@@ -94,18 +107,16 @@
             this.seat = this.$route.params.seat;
             this.connectSocket();
         },
-        mounted() {
-            this.putChess();
-        },
         beforeDestroy() {
             this.connector.close();
             this.connector = false;
         },
         methods: {
-            bindEvent() {
-                this.connector.onmessage = (evt) => {
-                    console.log(evt.data);
-                }
+            timeFormat(second) {
+                var h = Math.floor(second / 3600) < 10 ? '0'+Math.floor(second / 3600) : Math.floor(second / 3600);
+                var m = Math.floor((second / 60 % 60)) < 10 ? '0' + Math.floor((second / 60 % 60)) : Math.floor((second / 60 % 60));
+                var s = Math.floor((second % 60)) < 10 ? '0' + Math.floor((second % 60)) : Math.floor((second % 60));
+                return h + ":" + m + ":" + s;
             },
             seatDown() {
                 this.connector.send(JSON.stringify({
@@ -135,18 +146,28 @@
                 return '';
             },
             readyBtnText() {
-                if (this.myStatus === 0) {
+                if (this.myStatus == 0) {
                     return '准 备';
-                } else if (this.myStatus === 1) {
+                } else if (this.myStatus == 1) {
                     return '取消准备';
-                } else if (this.myStatus === 2) {
+                } else if (this.myStatus == 2 || this.tableStatus == 1) {
                     return '';
                 }
             },
-            putChess() {
+            startGame(table) {
+                console.log(table);
                 let myChess = [];
                 let enemyChess = [];
                 let enemyColor = '';
+                for (let i in table.USERS) {
+                    if (table.USERS[i].username == this.myName) {
+                        this.myColor = table.USERS[i].color;
+                        this.myUsedTime = table.USERS[i].USED_TIME;
+                    } else {
+                        this.enemyUsedTime = table.USERS[i].USED_TIME;
+                    }
+                }
+                this.gamingTime = table.GAMING_DATA.TOTAL_TIME;
                 if (this.myColor == 'redChess') {
                     myChess = this.redChessName;
                     enemyChess = this.blackChessName;
@@ -156,74 +177,112 @@
                     enemyChess = this.redChessName;
                     enemyColor = 'redChess';
                 }
-                let chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.chariot+'</div>';
+                let chess = '<div row="1" col="1" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.chariot+'</div>';
                 document.querySelector('#position_1_1').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.knight+'</div>';
+                chess = '<div row="1" col="2" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.knight+'</div>';
                 document.querySelector('#position_1_2').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.elephant+'</div>';
+                chess = '<div row="1" col="3" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.elephant+'</div>';
                 document.querySelector('#position_1_3').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.guard+'</div>';
+                chess = '<div row="1" col="4" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.guard+'</div>';
                 document.querySelector('#position_1_4').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.king+'</div>';
+                chess = '<div row="1" col="5" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.king+'</div>';
                 document.querySelector('#position_1_5').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.guard+'</div>';
+                chess = '<div row="1" col="6" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.guard+'</div>';
                 document.querySelector('#position_1_6').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.elephant+'</div>';
+                chess = '<div row="1" col="7" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.elephant+'</div>';
                 document.querySelector('#position_1_7').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.knight+'</div>';
+                chess = '<div row="1" col="8" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.knight+'</div>';
                 document.querySelector('#position_1_8').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.chariot+'</div>';
+                chess = '<div row="1" col="9" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.chariot+'</div>';
                 document.querySelector('#position_1_9').innerHTML = chess;
         
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.gunner+'</div>';
+                chess = '<div row="3" col="2" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.gunner+'</div>';
                 document.querySelector('#position_3_2').innerHTML = chess;
+                chess = '<div row="3" col="8" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.gunner+'</div>';
                 document.querySelector('#position_3_8').innerHTML = chess;
         
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
+                chess = '<div row="4" col="1" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
                 document.querySelector('#position_4_1').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
+                chess = '<div row="4" col="3" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
                 document.querySelector('#position_4_3').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
+                chess = '<div row="4" col="5" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
                 document.querySelector('#position_4_5').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
+                chess = '<div row="4" col="7" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
                 document.querySelector('#position_4_7').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
+                chess = '<div row="4" col="9" class="enemyChess chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
                 document.querySelector('#position_4_9').innerHTML = chess;
-                chess = '<div class="chessObject '+enemyColor+'">'+enemyChess.soldier+'</div>';
 
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
+                chess = '<div row="7" col="1" class="myChess chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
                 document.querySelector('#position_7_1').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
+                chess = '<div row="7" col="3" class="myChess chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
                 document.querySelector('#position_7_3').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
+                chess = '<div row="7" col="5" class="myChess chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
                 document.querySelector('#position_7_5').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
+                chess = '<div row="7" col="7" class="myChess chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
                 document.querySelector('#position_7_7').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
+                chess = '<div row="7" col="9" class="myChess chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
                 document.querySelector('#position_7_9').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.soldier+'</div>';
 
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.gunner+'</div>';
+                chess = '<div row="8" col="2" class="myChess chessObject '+this.myColor+'">'+myChess.gunner+'</div>';
                 document.querySelector('#position_8_2').innerHTML = chess;
+                chess = '<div row="8" col="8" class="myChess chessObject '+this.myColor+'">'+myChess.gunner+'</div>';
                 document.querySelector('#position_8_8').innerHTML = chess;
 
+                chess = '<div row="10" col="1" class="myChess chessObject '+this.myColor+'">'+myChess.knight+'</div>';
                 document.querySelector('#position_10_1').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.knight+'</div>';
+                chess = '<div row="10" col="2" class="myChess chessObject '+this.myColor+'">'+myChess.knight+'</div>';
                 document.querySelector('#position_10_2').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.elephant+'</div>';
+                chess = '<div row="10" col="3" class="myChess chessObject '+this.myColor+'">'+myChess.elephant+'</div>';
                 document.querySelector('#position_10_3').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.guard+'</div>';
+                chess = '<div row="10" col="4" class="myChess chessObject '+this.myColor+'">'+myChess.guard+'</div>';
                 document.querySelector('#position_10_4').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.king+'</div>';
+                chess = '<div row="10" col="5" class="myChess chessObject '+this.myColor+'">'+myChess.king+'</div>';
                 document.querySelector('#position_10_5').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.guard+'</div>';
+                chess = '<div row="10" col="6" class="myChess chessObject '+this.myColor+'">'+myChess.guard+'</div>';
                 document.querySelector('#position_10_6').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.elephant+'</div>';
+                chess = '<div row="10" col="7" class="myChess chessObject '+this.myColor+'">'+myChess.elephant+'</div>';
                 document.querySelector('#position_10_7').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.knight+'</div>';
+                chess = '<div row="10" col="8" class="myChess chessObject '+this.myColor+'">'+myChess.knight+'</div>';
                 document.querySelector('#position_10_8').innerHTML = chess;
-                chess = '<div class="chessObject '+this.myColor+'">'+myChess.chariot+'</div>';
+                chess = '<div row="10" col="9" class="myChess chessObject '+this.myColor+'">'+myChess.chariot+'</div>';
                 document.querySelector('#position_10_9').innerHTML = chess;
+                console.log(table.GAMING_DATA.TURN, this.myName);
+                if (table.GAMING_DATA.TURN == this.myName) {
+                    this.enabledMove();
+                }
+            },
+            enabledMove() {
+                let myChessList = document.querySelectorAll('.myChess');
+                let panelDivList = document.querySelectorAll('.panelDiv');
+                panelDivList.forEach(item => {
+                    item.onclick = () => {
+                        
+                    };
+                });
+                // myChessList.forEach(item => {
+                //     item.onclick = () => {
+                //         // cancel selected chess, unbind move event
+                //         if (event.target == this.selectedChess) {
+                //             item.classList.remove('flash');
+                //             this.selectedChess = null;
+                //             return;
+                //         }
+                //         // select another chess, unbind the last selected
+                //         myChessList.forEach(el => {
+                //             el.classList.remove('flash');
+                //         });
+                //         item.classList.add('flash');
+                //         this.selectedChess = event.target;
+                //     }
+                // });
+            },
+            doMoveAction() {
+                if (this.selectedChess == null) {
+                    return;
+                }
+                let col = this.selectedChess.getAttribute('col');
+                let row = this.selectedChess.getAttribute('row');
+                console.log(col, row);
             },
             readyPlay() {
                 let data = {
@@ -241,6 +300,7 @@
                 });
             },
             tableInfo(table) {
+                this.tableStatus = table.STATUS;
                 table.USERS.forEach(item => {
                     let avatar = item.avatar ? item.avatar : 'nobody.png';
                     if (item.username == this.myName) {
@@ -262,18 +322,26 @@
                         console.log('server error:' + data);
                         return;
                     }
+                    console.log(data);
                     switch (data.data.ACTION) {
                         case 'SEATDOWN':
                             if (data.result == false) {
                                 this.$swal.fire("提示", data.message, "info");
-                                // this.$router.push('/');
-                                // return;
+                                this.$router.push('/');
+                                return;
                             }
+                            break;
+                        case 'PLAYER_LEAVE':
                             break;
                         case 'TABLE_UPDATE':
                             this.tableInfo(data.data.table);
                             break;
                         case 'READY':
+                            this.tableInfo(data.data.table);
+                            break;
+                        case 'START_GAME':
+                            this.tableInfo(data.data.table);
+                            this.startGame(data.data.table);
                             break;
                         default:
                             console.log(data.message);
@@ -305,6 +373,9 @@
 </script>
 
 <style scoped>
+    .opBtn {
+        width: 100px;
+    }
 
     .avatarDiv {
         height: 50px;
@@ -384,6 +455,35 @@
     @font-face {
         font-family: 'yanti';
         src: url(/static/images/game/chineseChess/yanti.woff2);
+    }
+
+    @keyframes chessFlash {
+        from {
+            opacity: 1.0;
+        }
+        50% {
+            opacity: 0;
+        }
+        to {
+            opacity: 1.0;
+        }
+    }
+
+    @-webkit-keyframes chessFlash {
+        from {
+            opacity: 1.0;
+        }
+        50% {
+            opacity: 0;
+        }
+        to {
+            opacity: 1.0;
+        }
+    }
+
+    #chessPanel .flash {
+        animation: chessFlash 1000ms infinite;
+        -webkit-animation: chessFlash 1000ms infinite;
     }
 
     #chineseChessTableMain #chessPanel .chessObject {
