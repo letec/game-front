@@ -58,10 +58,11 @@
                     </div>
                     <div id="chatPanel" class="col-md-12">
                         <div id="chatContent" class="col-md-12">
-
+                            <ul ref="chatContent">
+                            </ul>
                         </div>
-                        <textarea class="form-control" id="sendContent"></textarea>
-                        <button id="sendBtn" class="btn btn-primary">发 送</button>
+                        <textarea  class="form-control" ref="sendContent" id="sendContent" maxlength="30"></textarea>
+                        <button @click="snedChatContent()" ref="sendBtn" id="sendBtn" class="btn btn-primary">发 送</button>
                     </div>
                 </div>
             </div>
@@ -157,7 +158,6 @@
                 }
             },
             updateChessPosition(table) {
-                console.log(table);
                 for (let row in table.GAMING_DATA.CHESS_PANEL) {
                     for (let col in table.GAMING_DATA.CHESS_PANEL[row]) {
                         let chess = table.GAMING_DATA.CHESS_PANEL[row][col];
@@ -296,6 +296,42 @@
                     }
                 });
             },
+            snedChatContent() {
+                this.$refs.sendBtn.disabled = true;
+                let content = this.$refs.sendContent.value;
+                if (content.length > 30) {
+                    return;
+                }
+                setTimeout(()=>{
+                    this.$refs.sendBtn.disabled = false;
+                }, 3000);
+                let data = {
+                    oid: this.oid,
+                    action: 'GAME_ACTION',
+                    data: {
+                        GAME_ACTION: 'CHAT',
+                        content: content
+                    }
+                };
+                this.connector.send(JSON.stringify(data));
+                this.$refs.sendContent.value = '';
+            },
+            updateChatContent(data) {
+                let html = data.from == this.myName ? '<li class="chat-mine">' : '<li class="chat-other">';
+                let content = data.content;
+                html += '<div class="chat-user"><img src="/static/images/avatar/'+data.avatar+'"><cite>';
+                if (data.from == this.myName) {
+                    html += '<i>'+data.time+'</i>'+data.from+'</cite></div>';
+                } else {
+                    html += data.from+'<i>'+data.time+'</i></cite></div>';
+                }
+
+                html += '<div class="chat-text">'+data.content+'</div>';
+                html += '</li>';
+                this.$refs.chatContent.innerHTML += html;
+                let height = document.getElementById('chatContent').scrollHeight;
+                document.getElementById('chatContent').scrollTop = height;
+            },
             actions(message){
                 try {
                     let data = JSON.parse(message.data);
@@ -327,6 +363,9 @@
                         case 'MOVE':
                             this.updateChessPosition(data.data.table);
                             this.enabledMove(data.data.table);
+                            break;
+                        case 'CHAT':
+                            this.updateChatContent(data.data);
                             break;
                         default:
                             break;
@@ -362,11 +401,13 @@
     }
 
     .avatarDiv {
-        height: 50px;
+        height: 55px;
     }
 
     #userPanel .avatar {
-        width: 50px;
+        width: 55px;
+        border: 1px solid rgb(170,170,170);
+        border-radius: 5px;
     }
 
     #userPanel .username {
@@ -375,6 +416,7 @@
 
     #chineseChessTableMain {
         padding: 35px 0 0 120px;
+        background-image: url(/static/images/game/chineseChess/tableBack.jpg);
     }
 
     #userPanel {
@@ -394,6 +436,8 @@
         border: 1px solid rgb(190, 190, 190);
         width: 100%;
         height: 250px;
+        overflow-y: auto;
+        padding: 5px;
     }
 
     #chatPanel textarea {
@@ -421,10 +465,12 @@
     }
 
     #chessPanel {
-        width: 769.5px;
+        width: 770px;
         height: 855px;
         background-image: url(/static/images/game/chineseChess/panel.jpg);
         background-size: cover;
+        border-radius: 8px;
+        box-shadow: 1px 2px 5px 0px black;
     }
 
     .panelDiv {
@@ -432,6 +478,12 @@
         height: 85.3px;
         float: left;
     }
+
+    body::-webkit-scrollbar {
+        display: block;
+    }
+    body { -ms-overflow-style: block; }
+
 </style>
 
 <style>
@@ -494,4 +546,111 @@
         color: rgb(61,42,19);
         box-shadow: 0 0 0 2px rgb(178,131,87), 0 0 0 5px rgb(61,42,19), 3px 3px 4px 3px black;
     }
+
+    #chatPanel #chatContent ul li {
+        position: relative;
+        font-size: 0;
+        padding-left: 20px;
+        min-height: 68px;
+    }
+
+    #chatPanel .chat-user {
+        position: absolute;
+        left: 3px;
+    }
+
+    #chatPanel .chat-user img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+    }
+
+    #chatPanel .chat-user cite {
+        position: absolute;
+        left: 60px;
+        top: -2px;
+        width: 500px;
+        line-height: 24px;
+        font-size: 12px;
+        white-space: nowrap;
+        color: #999;
+        text-align: left;
+        font-style: normal;
+    }
+
+    #chatPanel .chat-user cite i {
+        font-style: normal;
+    }
+
+    #chatPanel .chat-mine .chat-user cite {
+        left: auto;
+        right: 60px;
+        text-align: right;
+    }
+
+    #chatPanel .chat-mine {
+        text-align: right;
+        padding-left: 0;
+        padding-right: 20px;
+    }
+
+    #chatPanel .chat-mine .chat-user {
+        left: auto;
+        right: 3px;
+    }
+
+    #chatPanel .chat-other .chat-user cite i {
+        padding-left: 10px;
+    }
+
+    #chatPanel .chat-mine .chat-user cite i {
+        padding-right: 10px;
+    }
+
+    #chatPanel #chatContent .chat-text {
+        position: relative;
+        line-height: 16px;
+        margin-top: 25px;
+        padding: 8px 15px;
+        background-color: #e2e2e2;
+        border-radius: 3px;
+        color: #333;
+        word-break: break-all;
+        display: inline-block;
+        vertical-align: top;
+        font-size: 14px;
+    }
+
+    #chatPanel #chatContent .chat-mine .chat-text {
+        margin-left: 0;
+        text-align: left;
+        background-color: #5FB878;
+        color: #fff;
+        right: 35px;
+    }
+
+    #chatPanel #chatContent .chat-other .chat-text {
+        position: absolute;
+        left: 60px;
+    }
+
+    #chatPanel #chatContent .chat-text:after {
+        content: '';
+        position: absolute;
+        left: -10px;
+        top: 13px;
+        width: 0;
+        height: 0;
+        border-style: solid dashed dashed;
+        border-color: #e2e2e2 transparent transparent;
+        /* overflow: hidden; */
+        border-width: 10px;
+    }
+
+    #chatPanel #chatContent .chat-mine .chat-text:after {
+        left: auto;
+        right: -10px;
+        border-top-color: #5FB878;
+    }
+
 </style>
