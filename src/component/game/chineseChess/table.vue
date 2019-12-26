@@ -45,7 +45,7 @@
                             <tr>
                                 <td style="width:50%;">
                                     <div style="height:38px">
-                                        <button v-show="tableStatus==0" @click="readyPlay()" class="opBtn btn btn-primary">{{ readyBtnText() }}</button>
+                                        <button v-show="tableStatus==0" ref="readyBtn" @click="readyPlay()" class="opBtn btn btn-primary">{{ readyBtnText() }}</button>
                                     </div>
                                 </td>
                                 <td style="width:50%;">
@@ -157,7 +157,7 @@
                     return '';
                 }
             },
-            updateChessPosition(table) {
+            updateChessPosition(table, flush) {
                 for (let row in table.GAMING_DATA.CHESS_PANEL) {
                     for (let col in table.GAMING_DATA.CHESS_PANEL[row]) {
                         let chess = table.GAMING_DATA.CHESS_PANEL[row][col];
@@ -167,12 +167,13 @@
                             document.querySelector('#position_'+panelRow+'_'+panelCol).innerHTML = '';
                         } else {
                             let html = '';
-                            if (chess.color == this.myColor) {
-                                html = '<div row="'+panelRow+'" col="'+panelCol+'" class="chessObject myChess '+chess.color+'">'+eval('this.myChessName.'+chess.type)+'</div>';
-                            } else {
-                                html = '<div row="'+panelRow+'" col="'+panelCol+'" class="chessObject enemyChess '+chess.color+'">'+eval('this.enemyChessName.'+chess.type)+'</div>';
+                            if (!flush) {
+                                if (chess.color == this.myColor) {
+                                    html = '<div row="'+panelRow+'" col="'+panelCol+'" class="chessObject myChess '+chess.color+'">'+eval('this.myChessName.'+chess.type)+'</div>';
+                                } else {
+                                    html = '<div row="'+panelRow+'" col="'+panelCol+'" class="chessObject enemyChess '+chess.color+'">'+eval('this.enemyChessName.'+chess.type)+'</div>';
+                                }
                             }
-
                             document.querySelector('#position_'+panelRow+'_'+panelCol).innerHTML = html;
                         }
                     }
@@ -198,7 +199,7 @@
                     this.enemyColor = 'redChess';
                 }
 
-                this.updateChessPosition(table);
+                this.updateChessPosition(table, false);
                 
                 this.enabledMove(table);
             },
@@ -361,8 +362,17 @@
                             this.startGame(data.data.table);
                             break;
                         case 'MOVE':
-                            this.updateChessPosition(data.data.table);
+                            this.updateChessPosition(data.data.table, false);
                             this.enabledMove(data.data.table);
+                            break;
+                        case 'GAME_OVER':
+                            this.$swal.fire(data.message, data.data.WIN + ' 获得了胜利!', "info");
+                            this.drawPanel();
+                            this.updateChessPosition(data.data.table, true);
+                            this.tableStatus = 0;
+                            this.myStatus = 0;
+                            this.enemyStatus = 0;
+                            this.$refs.readyBtn.value = this.readyBtnText();
                             break;
                         case 'CHAT':
                             this.updateChatContent(data.data);
