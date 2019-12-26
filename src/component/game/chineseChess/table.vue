@@ -209,7 +209,7 @@
                 });
                 let chessList = document.querySelectorAll('.chessObject');
                 panelDivList.forEach(item => {
-                    if (item.className.indexOf('flash') > -1) {
+                    if (global.inArray('flash', item.classList)) {
                         item.classList.remove('flash');
                         this.selectedChess = null;
                         return;
@@ -226,10 +226,10 @@
                 panelDivList.forEach(item => {
                     item.onclick = () => {
                         let obj = event.target;
-                        if ((obj.className.indexOf('panelDiv') > -1 || obj.className.indexOf('enemyChess') > -1) && this.selectedChess != null) {
+                        if ((global.inArray('panelDiv', obj.classList) || global.inArray('enemyChess', obj.classList)) && this.selectedChess != null) {
                             this.doMoveAction(obj);
-                        } else if (obj.className.indexOf('chessObject') > -1 && obj.className.indexOf('myChess') > -1) {
-                            if (obj.className.indexOf('flash') > -1) {
+                        } else if (global.inArray('chessObject', obj.classList) && global.inArray('myChess', obj.classList)) {
+                            if (global.inArray('flash', obj.classList)) {
                                 obj.classList.remove('flash');
                                 this.selectedChess = null;
                             } else {

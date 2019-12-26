@@ -96,7 +96,7 @@ function checkOnline() {
 }
 
 function inArray(val, arr) {
-    for (let i in arr) {
+    for (let i = 0; i < arr.length; i++) {
         if (arr[i] == val) {
             return true;
         }
