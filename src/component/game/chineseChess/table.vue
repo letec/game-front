@@ -78,8 +78,8 @@ import { clearInterval } from 'timers';
         data() {
             return {
                 connector: false,
-                blackChessName: {chariot:"车", knight:"马", elephant:"象", guard: "士", king: "帅", soldier:"兵", gunner:"炮"},
-                redChessName: {chariot:"車", knight:"馬", elephant:"相", guard: "仕", king: "將", soldier:"兵", gunner:"砲"},
+                redChessName: {chariot:"车", knight:"马", elephant:"象", guard: "士", king: "帅", soldier:"兵", gunner:"炮"},
+                blackChessName: {chariot:"車", knight:"馬", elephant:"相", guard: "仕", king: "將", soldier:"卒", gunner:"砲"},
                 screenHeight: document.documentElement.clientHeight,
                 panelMap: [],
                 oid: sessionStorage.getItem("onlineToken"),
