@@ -46,6 +46,7 @@
                                 <td style="width:33.33%;">
                                     <div style="height:38px">
                                         <button v-if="tableStatus==0" ref="readyBtn" @click="readyPlay()" class="opBtn btn btn-primary">{{ readyBtnText() }}</button>
+                                        <button v-if="tableStatus==1&&askedDraw==0" ref="askForDrawBtn" @click="askForDraw()" class="opBtn btn btn-primary">求 和</button>
                                     </div>
                                 </td>
                                 <td style="width:33.33%;">
@@ -107,7 +108,8 @@
                 selectedChess: null,
                 roundTimer: null,
                 userTotalLimitTime: 30*60,
-                keepAliveTimer: null
+                keepAliveTimer: null,
+                askedDraw: 0
             }
         },
         created() {
@@ -263,9 +265,9 @@
                 };
                 this.connector.send(JSON.stringify(data));
                 if (flag == 1) {
-                    this.$swal.fire("游戏结束", "局时耗尽,您输了!", "info");
+                    this.$swal.fire('游戏结束', '局时耗尽,您输了!', 'info');
                 } else {
-                    this.$swal.fire("游戏结束", "您主动认输了!", "info");
+                    this.$swal.fire('游戏结束', '您主动认输了!', 'info');
                 }
             },
             enabledMove(table) {
@@ -360,6 +362,17 @@
                     }
                 });
             },
+            askForDraw() {
+                this.askedDraw = 1;
+                let data = {
+                    oid: this.oid,
+                    action: 'GAME_ACTION',
+                    data: {
+                        GAME_ACTION: 'ASK_FOR_DRAW',
+                    }
+                };
+                this.connector.send(JSON.stringify(data));
+            },
             snedChatContent() {
                 this.$refs.sendBtn.disabled = true;
                 let content = this.$refs.sendContent.value;
@@ -400,13 +413,39 @@
                 window.clearInterval(this.myTimer);
                 window.clearInterval(this.enemyTimer);
                 window.clearInterval(this.roundTimer);
-                this.drawPanel();
                 this.updateChessPosition(data.data.table, true);
                 this.tableStatus = 0;
                 this.myStatus = 0;
                 this.enemyStatus = 0;
                 this.myUsedTime = 0;
                 this.gamingTime = 0;
+                this.askedDraw = 0;
+            },
+            replyForDraw() {
+                this.$swal.fire({
+                    title: '信息',
+                    text: "对方正在向您求和!",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: 'green',
+                    confirmButtonColor: '#d33',
+                    cancelButtonText: '不同意',
+                    confirmButtonText: '同意'
+                }).then((result) => {
+                    let data = {
+                        oid: this.oid,
+                        action: 'GAME_ACTION',
+                        data: {
+                            GAME_ACTION: 'REPLY_FOR_DRAW',
+                            ANSWER: false
+                        }
+                    };
+                    if (result.value) {
+                        data.data.ANSWER = true;
+                    }
+                    this.connector.send(JSON.stringify(data));
+                });
             },
             actions(message){
                 try {
@@ -419,14 +458,14 @@
                     switch (data.data.ACTION) {
                         case 'SEATDOWN':
                             if (data.result == false) {
-                                this.$swal.fire("提示", data.message, "info");
+                                this.$swal.fire("提示", data.message, 'info');
                                 this.$router.push('/');
                                 return;
                             }
                             break;
                         case 'PLAYER_LEAVE':
                             if (this.tableStatus == 1) {
-                                this.$swal.fire(data.message, data.data.LEAVE + ' 逃跑了!', "info");
+                                this.$swal.fire(data.message, data.data.LEAVE + ' 逃跑了!', 'info');
                                 this.gameOver(data);
                             }
                             this.tableInfo(data.data.table);
@@ -446,8 +485,22 @@
                             this.enabledMove(data.data.table);
                             break;
                         case 'GAME_OVER':
-                            this.$swal.fire(data.message, data.data.WIN + ' 获得了胜利!', "info");
+                            if (data.message, data.data.WIN != '') {
+                                this.$swal.fire(data.message, data.data.WIN + ' 获得了胜利!', 'info');
+                            } else {
+                                this.$swal.fire(data.message, '本局打和!', 'info');
+                            }
                             this.gameOver(data);
+                            break;
+                        case 'ASK_FOR_DRAW':
+                            if (data.data.REQUEST_USER != this.myName) {
+                                this.replyForDraw();
+                            }
+                            break;
+                        case 'REFUSE_FOR_DRAW':
+                            if (data.data.REPLY_USER != this.myName) {
+                                this.$swal.fire('回复', '对方拒绝求和!', 'info');
+                            }
                             break;
                         case 'CHAT':
                             this.updateChatContent(data.data);
