@@ -34,7 +34,7 @@
                 return;
             }
             this.intoHall();
-            this.dataTimer = setInterval(this.roomInfo, 5000)
+            this.dataTimer = setInterval(this.roomInfo, 2500);
         },
         beforeDestroy() {
             clearInterval(this.dataTimer);

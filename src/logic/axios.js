@@ -24,7 +24,7 @@ service.interceptors.response.use(
         if (response.data.result == false && response.data.message == "OFFLINE") {
             sessionStorage.clear();
             setTimeout(function(){
-                window.location.href = document.domain;
+                window.location.href = '/';
             }, 1500)
         }
         return response.data;
