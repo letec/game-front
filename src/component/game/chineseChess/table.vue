@@ -43,14 +43,15 @@
                                 <td colspan="2"><span></span></td>
                             </tr>
                             <tr>
-                                <td style="width:50%;">
+                                <td style="width:33.33%;">
                                     <div style="height:38px">
-                                        <button v-show="tableStatus==0" ref="readyBtn" @click="readyPlay()" class="opBtn btn btn-primary">{{ readyBtnText() }}</button>
+                                        <button v-if="tableStatus==0" ref="readyBtn" @click="readyPlay()" class="opBtn btn btn-primary">{{ readyBtnText() }}</button>
                                     </div>
                                 </td>
-                                <td style="width:50%;">
+                                <td style="width:33.33%;">
                                     <div style="height:38px">
-                                        <button v-show="myStatus==0" @click="backToHall()" class="opBtn btn btn-danger">离 开</button>
+                                        <button v-if="myStatus==0" @click="backToHall()" class="opBtn btn btn-danger">离 开</button>
+                                        <button v-if="tableStatus==1" @click="giveUp(0)" class="opBtn btn btn-danger">认 输</button>
                                     </div>
                                 </td>
                             </tr>
@@ -72,6 +73,7 @@
 
 <script>
     import global from "../../../logic/global"
+import { clearInterval } from 'timers';
     export default {
         data() {
             return {
@@ -92,6 +94,7 @@
                 myAvatar: '',
                 myUsedTime: 0,
                 myChessName: null,
+                myTimer: null,
                 enemyName: '',
                 enemyAvatar: '/static/images/avatar/nobody.png',
                 enemyStatus: '',
@@ -99,8 +102,11 @@
                 enemyWinLose: '',
                 enemyUsedTime: 0,
                 enemyChessName: null,
+                enemyTimer: null,
                 gamingTime: 0,
                 selectedChess: null,
+                roundTimer: null,
+                userTotalLimitTime: 30*60,
             }
         },
         created() {
@@ -180,6 +186,7 @@
                 }
             },
             startGame(table) {
+                this.gamingTime = table.GAMING_DATA.TOTAL_TIME;
                 for (let i in table.USERS) {
                     if (table.USERS[i].username == this.myName) {
                         this.myColor = table.USERS[i].color;
@@ -188,7 +195,10 @@
                         this.enemyUsedTime = table.USERS[i].USED_TIME;
                     }
                 }
-                this.gamingTime = table.GAMING_DATA.TOTAL_TIME;
+                this.roundTimer = setInterval(()=>{
+                    this.gamingTime ++;
+                }, 1000);
+
                 if (this.myColor == 'redChess') {
                     this.myChessName = this.redChessName;
                     this.enemyChessName = this.blackChessName;
@@ -217,10 +227,62 @@
                     }
                 });
             },
+            giveUp(flag) {
+                if (flag == 0) {
+                    this.$swal.fire({
+                        title: '警告',
+                        text: "您确定要认输吗?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: 'green',
+                        confirmButtonColor: '#d33',
+                        cancelButtonText: '再看看',
+                        confirmButtonText: '认输了'
+                    }).then((result) => {
+                        if (!result.value) {
+                            return;
+                        }
+                        this.loseGame(flag);
+                    });
+                } else {
+                    this.loseGame(flag);
+                }
+            },
+            loseGame(flag) {
+                window.clearInterval(this.myTimer);
+                window.clearInterval(this.enemyTimer);
+                window.clearInterval(this.roundTimer);
+                let data = {
+                    oid: this.oid,
+                    action: 'GAME_ACTION',
+                    data: {
+                        GAME_ACTION: 'GIVE_UP'
+                    }
+                };
+                this.connector.send(JSON.stringify(data));
+                if (flag == 1) {
+                    this.$swal.fire("游戏结束", "局时耗尽,您输了!", "info");
+                } else {
+                    this.$swal.fire("游戏结束", "您主动认输了!", "info");
+                }
+            },
             enabledMove(table) {
                 if (table.GAMING_DATA.TURN != this.myName) {
+                    window.clearInterval(this.myTimer);
+                    this.enemyTimer = setInterval(()=>{
+                        this.enemyUsedTime ++;
+                    }, 1000);
                     this.disabledMove();
                     return;
+                } else {
+                    window.clearInterval(this.enemyTimer);
+                    this.myTimer = setInterval(()=>{
+                        if (this.myUsedTime > this.userTotalLimitTime) {
+                            this.giveUp(1);
+                        }
+                        this.myUsedTime ++;
+                    }, 1000);
                 }
                 let panelDivList = document.querySelectorAll('.panelDiv');
                 let chessList = document.querySelectorAll('.chessObject');
@@ -333,6 +395,18 @@
                 let height = document.getElementById('chatContent').scrollHeight;
                 document.getElementById('chatContent').scrollTop = height;
             },
+            gameOver(data) {
+                window.clearInterval(this.myTimer);
+                window.clearInterval(this.enemyTimer);
+                window.clearInterval(this.roundTimer);
+                this.drawPanel();
+                this.updateChessPosition(data.data.table, true);
+                this.tableStatus = 0;
+                this.myStatus = 0;
+                this.enemyStatus = 0;
+                this.myUsedTime = 0;
+                this.gamingTime = 0;
+            },
             actions(message){
                 try {
                     let data = JSON.parse(message.data);
@@ -340,7 +414,7 @@
                         console.log('server error:' + data);
                         return;
                     }
-                    console.log(data);
+                    console.log(data, data.data.ACTION);
                     switch (data.data.ACTION) {
                         case 'SEATDOWN':
                             if (data.result == false) {
@@ -350,6 +424,11 @@
                             }
                             break;
                         case 'PLAYER_LEAVE':
+                            if (this.tableStatus == 1) {
+                                this.$swal.fire(data.message, data.data.LEAVE + ' 逃跑了!', "info");
+                                this.gameOver(data);
+                            }
+                            this.tableInfo(data.data.table);
                             break;
                         case 'TABLE_UPDATE':
                             this.tableInfo(data.data.table);
@@ -367,12 +446,7 @@
                             break;
                         case 'GAME_OVER':
                             this.$swal.fire(data.message, data.data.WIN + ' 获得了胜利!', "info");
-                            this.drawPanel();
-                            this.updateChessPosition(data.data.table, true);
-                            this.tableStatus = 0;
-                            this.myStatus = 0;
-                            this.enemyStatus = 0;
-                            this.$refs.readyBtn.value = this.readyBtnText();
+                            this.gameOver(data);
                             break;
                         case 'CHAT':
                             this.updateChatContent(data.data);

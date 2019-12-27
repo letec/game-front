@@ -1,5 +1,5 @@
-const apiUrl = "http://192.168.44.128:9501"
-const websocketUrl = "ws://192.168.44.128:9502";
+const apiUrl = "http://10.10.20.43:9501"
+const websocketUrl = "ws://10.10.20.43:9502";
 
 const gameConfig = {
     chess: {

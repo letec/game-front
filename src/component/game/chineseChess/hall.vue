@@ -1,34 +1,14 @@
 <template>
-    <div>
-        <div class="col-md-12 hall-title">
-            <marquee class="scroll_text">欢迎</marquee>
-        </div>
-        <div class="middle-panel col-md-9" :style="{'height':screenHeight-30+'px','background-color':'#05436C'}">
+    <div id="hall_main">
+        <header-view></header-view>
+        <div class="middle-panel col-md-12" :style="{'height':screenHeight-90+'px','background-color':'#05436C'}">
+            <div class="col-md-12">
+                <marquee class="scroll_text">欢迎</marquee>
+            </div>
             <div v-for="(item,i) in tables" class="hall-table" v-bind:key="i">
                 <img @click="seatDown(i+1, '1')" :ref="'tables_'+i+'_1'" class="table-user" :src="item.PlayerAImg">
                 <img :ref="'tables_'+i+'_T'" class="table-table" :src="item.TableImg">
                 <img @click="seatDown(i+1, '2')" :ref="'tables_'+i+'_2'" class="table-user" :src="item.PlayerBImg">
-            </div>
-        </div>
-        <div class="right-panel col-md-3" :style="{'height':screenHeight-30+'px'}">
-            <div class="col-md-12">
-                <!-- <h4>在线: {{userList.length}}人</h4> -->
-            </div>
-            <div id="user-list" class="col-md-12">
-                <table class="table table-default">
-                    <tr>
-                        <th>玩家</th>
-                        <th>积分</th>
-                        <th>胜负</th>
-                        <th>状态</th>
-                    </tr>
-                    <!-- <tr v-for="(item,u) in userList" v-bind:key="u">
-                        <td>{{item.UserName}}</td>
-                        <td>{{item.Score}}</td>
-                        <td>{{item.Win}} / {{item.Lose}}</td>
-                        <td>{{userStatus[item.Status]}}</td>
-                    </tr> -->
-                </table>
             </div>
         </div>
     </div>
@@ -136,23 +116,15 @@
 </script>
 
 <style scoped>
-    .hall-title {
-        height: 30px;
-        background-color: papayawhip;
-    }
 
-    .hall-title marquee {
-        line-height: 30px;
-    }
-
-    .middle-panel,
-    .right-panel {
-        float: left;
-        background-color: #f0f8f6;
+    .scroll_text {
+        height: 50px;
+        line-height: 50px;
+        background-color: inherit;
+        color: antiquewhite;
     }
 
     .middle-panel {
-        padding: 1.5% 0 0 1.5%;
         overflow-y: auto;
     }
 
@@ -160,8 +132,13 @@
         display: block;
     }
 
+    .middle-panel, .right-panel {
+        float: left;
+        background-color: #f0f8f6;
+    }
+
     .hall-table {
-        width: 14%;
+        width: 10%;
         float: left;
         height: 9%;
         margin-bottom: 4%;
@@ -175,6 +152,7 @@
     .table-user {
         border-radius: 3px;
         width: 18%;
+        cursor: pointer;
     }
 
     .table-user:hover {
@@ -191,9 +169,4 @@
         width: 40%;
     }
 
-    #user-list table tr td,
-    #user-list table tr th {
-        border: 0px;
-        font-family: '黑体';
-    }
 </style>

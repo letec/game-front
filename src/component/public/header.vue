@@ -72,7 +72,7 @@
             quit() {
                 this.$axios.post(global.apiUrl + '/user/quit', {oid:sessionStorage.getItem('onlineToken')});
                 sessionStorage.clear();
-                window.location.href = document.domain;
+                window.location.href = '/';
             }
         }
     }
