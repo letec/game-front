@@ -28,6 +28,9 @@ Vue.component("footer-view", Footer)
 import ChinessChess from "./component/game/chineseChess/hall.vue"
 import ChinessChessTable from "./component/game/chineseChess/table.vue"
 
+import LineFive from "./component/game/lineFive/hall.vue"
+import LineFiveTable from "./component/game/lineFive/table.vue"
+
 const routes = [
     { name: 'index', path: '/', component: App },
     { name: 'settings', path: '/settings', component: Settings },
@@ -36,6 +39,8 @@ const routes = [
     { name: 'about', path: '/about', component: About },
     { name: 'chinessChess', path: '/chinessChess', component: ChinessChess },
     { name: 'chinessChessTable', path: '/chinessChessTable', component: ChinessChessTable },
+    { name: 'lineFive', path: '/lineFive', component: LineFive },
+    { name: 'lineFiveTable', path: '/lineFiveTable', component: LineFiveTable }
 ]
 
 const router = new VueRouter({

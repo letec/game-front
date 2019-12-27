@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="chineseChessTableMain" :style="{'height':screenHeight+'px'}">
+        <div id="lineFiveTableMain" :style="{'height':screenHeight+'px'}">
             <div id="leftPanel" class="col-md-7">
                 <div id="chessPanel">
                     <div :row="item.row" :col="item.col" :id="'position_'+item.row+'_'+item.col" 
@@ -11,7 +11,7 @@
             <div id="rightPanel" class="col-md-5">
                 <div id="userPanel" class="col-md-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading"><h3>中国象棋</h3></div>
+                        <div class="panel-heading"><h3>五子棋</h3></div>
                         <div class="panel-body">
                             <p>桌面信息</p>
                         </div>
@@ -73,13 +73,11 @@
 
 <script>
     import global from "../../../logic/global"
-
+import { clearInterval } from 'timers';
     export default {
         data() {
             return {
                 connector: false,
-                redChessName: {chariot:"车", knight:"马", elephant:"象", guard: "士", king: "帅", soldier:"兵", gunner:"炮"},
-                blackChessName: {chariot:"車", knight:"馬", elephant:"相", guard: "仕", king: "將", soldier:"卒", gunner:"砲"},
                 screenHeight: document.documentElement.clientHeight,
                 panelMap: [],
                 oid: sessionStorage.getItem("onlineToken"),
@@ -89,7 +87,7 @@
                 seat: '',
                 myName: sessionStorage.getItem("username"),
                 myStatus: 0,
-                myColor: 'redChess',
+                myColor: '',
                 myWinLose : '',
                 myAvatar: '',
                 myUsedTime: 0,
@@ -168,8 +166,8 @@
                 for (let row in table.GAMING_DATA.CHESS_PANEL) {
                     for (let col in table.GAMING_DATA.CHESS_PANEL[row]) {
                         let chess = table.GAMING_DATA.CHESS_PANEL[row][col];
-                        let panelRow = (this.myColor == 'redChess') ? row : (row * -1 + 11);
-                        let panelCol = (this.myColor == 'redChess') ? col : (col * -1 + 10);
+                        let panelRow = (this.myColor == 'whiteChess') ? row : (row * -1 + 11);
+                        let panelCol = (this.myColor == 'whiteChess') ? col : (col * -1 + 10);
                         if (chess == '') {
                             document.querySelector('#position_'+panelRow+'_'+panelCol).innerHTML = '';
                         } else {
@@ -200,14 +198,14 @@
                     this.gamingTime ++;
                 }, 1000);
 
-                if (this.myColor == 'redChess') {
-                    this.myChessName = this.redChessName;
+                if (this.myColor == 'whiteChess') {
+                    this.myChessName = this.whiteChessName;
                     this.enemyChessName = this.blackChessName;
                     this.enemyColor = 'blackChess';
                 } else {
                     this.myChessName = this.blackChessName;
-                    this.enemyChessName = this.redChessName;
-                    this.enemyColor = 'redChess';
+                    this.enemyChessName = this.whiteChessName;
+                    this.enemyColor = 'whiteChess';
                 }
 
                 this.updateChessPosition(table, false);
@@ -218,14 +216,6 @@
                 let panelDivList = document.querySelectorAll('.panelDiv');
                 panelDivList.forEach(item => {
                     item.onclick = function () {};
-                });
-                let chessList = document.querySelectorAll('.chessObject');
-                panelDivList.forEach(item => {
-                    if (global.inArray('flash', item.classList)) {
-                        item.classList.remove('flash');
-                        this.selectedChess = null;
-                        return;
-                    }
                 });
             },
             giveUp(flag) {
@@ -290,20 +280,7 @@
                 panelDivList.forEach(item => {
                     item.onclick = () => {
                         let obj = event.target;
-                        if ((global.inArray('panelDiv', obj.classList) || global.inArray('enemyChess', obj.classList)) && this.selectedChess != null) {
-                            this.doMoveAction(obj);
-                        } else if (global.inArray('chessObject', obj.classList) && global.inArray('myChess', obj.classList)) {
-                            if (global.inArray('flash', obj.classList)) {
-                                obj.classList.remove('flash');
-                                this.selectedChess = null;
-                            } else {
-                                chessList.forEach(cl => {
-                                    cl.classList.remove('flash');
-                                });
-                                obj.classList.add('flash');
-                                this.selectedChess = obj;
-                            }
-                        }
+                        
                     };
                 });
             },
@@ -341,7 +318,7 @@
                 this.connector.close();
                 delete this.connector;
                 this.$router.push({
-                    'name': 'chinessChess'
+                    'name': 'lineFive'
                 });
             },
             tableInfo(table) {
@@ -510,9 +487,9 @@
         font-size: 16px;
     }
 
-    #chineseChessTableMain {
+    #lineFiveTableMain {
         padding: 35px 0 0 120px;
-        background-image: url(/static/images/game/chineseChess/tableBack.jpg);
+        background-image: url(/static/images/game/lineFive/tableBack.jpg);
     }
 
     #userPanel {
@@ -561,9 +538,9 @@
     }
 
     #chessPanel {
-        width: 770px;
+        width: 855px;
         height: 855px;
-        background-image: url(/static/images/game/chineseChess/panel.jpg);
+        background-image: url();
         background-size: cover;
         border-radius: 8px;
         box-shadow: 1px 2px 5px 0px black;
@@ -584,60 +561,13 @@
 
 <style>
 
-    @font-face {
-        font-family: 'yanti';
-        src: url(/static/images/game/chineseChess/yanti.woff2);
-    }
-
-    @keyframes chessFlash {
-        from {
-            opacity: 1.0;
-        }
-        50% {
-            opacity: 0;
-        }
-        to {
-            opacity: 1.0;
-        }
-    }
-
-    @-webkit-keyframes chessFlash {
-        from {
-            opacity: 1.0;
-        }
-        50% {
-            opacity: 0;
-        }
-        to {
-            opacity: 1.0;
-        }
-    }
-
-    #chessPanel .flash {
-        animation: chessFlash 1000ms infinite;
-        -webkit-animation: chessFlash 1000ms infinite;
-    }
-
-    #chineseChessTableMain #chessPanel .chessObject {
-        font-size: 49px;
-        text-align: center;
-        line-height: 63px;
-        background-color: rgb(178,131,87);
-        width: 70px;
-        height: 70px;
-        border-radius: 50px;
-        margin: 10px 0 0 10px;
-        font-family: "yanti";
-        cursor: pointer;
-    }
-
-    #chineseChessTableMain #chessPanel .redChess {
+    #lineFiveTableMain #chessPanel .whiteChess {
         border: 2px solid rgb(118,0,12);
         color: rgb(118,0,12);
         box-shadow: 0 0 0 2px rgb(178,131,87), 0 0 0 5px rgb(118,0,12), 3px 3px 4px 3px black;
     }
 
-    #chineseChessTableMain #chessPanel .blackChess {
+    #lineFiveTableMain #chessPanel .blackChess {
         border: 3px solid rgb(61,42,19);
         color: rgb(61,42,19);
         box-shadow: 0 0 0 2px rgb(178,131,87), 0 0 0 5px rgb(61,42,19), 3px 3px 4px 3px black;
