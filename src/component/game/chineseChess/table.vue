@@ -63,7 +63,7 @@
                             <ul ref="chatContent">
                             </ul>
                         </div>
-                        <textarea  class="form-control" ref="sendContent" id="sendContent" maxlength="30"></textarea>
+                        <textarea class="form-control" ref="sendContent" id="sendContent" maxlength="40"></textarea>
                         <button @click="snedChatContent()" ref="sendBtn" id="sendBtn" class="btn btn-primary">发 送</button>
                     </div>
                 </div>
@@ -119,6 +119,22 @@
             this.seat = this.$route.params.seat;
             this.connectSocket();
         },
+        mounted() {
+            this.$refs.sendContent.onfocus = () => {
+                document.onkeydown = (event) => {
+                    let e = event || window.event || arguments.callee.caller.arguments[0];
+                    if (e && e.keyCode == 13) {
+                        this.$refs.sendBtn.click();
+                        return false;
+                    }
+                }
+            };
+            this.$refs.sendContent.onblur = () => {
+                document.onkeydown = () => {
+                    return true;
+                }
+            };
+        },
         beforeDestroy() {
             this.connector.close();
             this.connector = false;
@@ -172,6 +188,7 @@
                         let chess = table.GAMING_DATA.CHESS_PANEL[row][col];
                         let panelRow = (this.myColor == 'redChess') ? row : (row * -1 + 11);
                         let panelCol = (this.myColor == 'redChess') ? col : (col * -1 + 10);
+                        document.getElementById('position_'+panelRow+'_'+panelCol).classList.remove('panelDivActive');
                         if (chess == '') {
                             document.querySelector('#position_'+panelRow+'_'+panelCol).innerHTML = '';
                         } else {
@@ -189,13 +206,13 @@
                 }
             },
             startGame(table) {
-                this.gamingTime = table.GAMING_DATA.TOTAL_TIME;
+                this.gamingTime = 0;
                 for (let i in table.USERS) {
                     if (table.USERS[i].username == this.myName) {
                         this.myColor = table.USERS[i].color;
-                        this.myUsedTime = table.USERS[i].USED_TIME;
+                        this.myUsedTime = 0;
                     } else {
-                        this.enemyUsedTime = table.USERS[i].USED_TIME;
+                        this.enemyUsedTime = 0;
                     }
                 }
                 this.roundTimer = setInterval(()=>{
@@ -375,8 +392,8 @@
             },
             snedChatContent() {
                 this.$refs.sendBtn.disabled = true;
-                let content = this.$refs.sendContent.value;
-                if (content.length > 30) {
+                let content = this.$refs.sendContent.value.trim();
+                if (content.length > 40 || content.length == 0) {
                     return;
                 }
                 setTimeout(()=>{
@@ -483,6 +500,22 @@
                         case 'MOVE':
                             this.updateChessPosition(data.data.table, false);
                             this.enabledMove(data.data.table);
+                            if (typeof data.data.selectedRow != 'undefined') {
+                                let selectedRow = data.data.selectedRow;
+                                let selectedCol = data.data.selectedCol;
+                                let targetRow = data.data.targetRow;
+                                let targetCol = data.data.targetCol;
+                                if (this.myColor != 'redChess') {
+                                    selectedRow = selectedRow * -1 + 11;
+                                    targetRow = targetRow * -1 + 11;
+                                    selectedCol = selectedCol * -1 + 10;
+                                    targetCol = targetCol * -1 + 10;
+                                }
+                                let selected = document.getElementById('position_'+selectedRow+'_'+selectedCol);
+                                let target = document.getElementById('position_'+targetRow+'_'+targetCol);
+                                selected.classList.add('panelDivActive');
+                                target.classList.add('panelDivActive');
+                            }
                             break;
                         case 'GAME_OVER':
                             if (data.message, data.data.WIN != '') {
@@ -529,6 +562,9 @@
                     };
                     this.connector.onclose = () => {
                         window.clearInterval(this.keepAliveTimer);
+                        window.clearInterval(this.myTimer);
+                        window.clearInterval(this.enemyTimer);
+                        window.clearInterval(this.roundTimer);
                         delete this.connector;
                         console.log('您已断开连接!');
                     };
@@ -694,6 +730,18 @@
         border: 3px solid rgb(61,42,19);
         color: rgb(61,42,19);
         box-shadow: 0 0 0 2px rgb(178,131,87), 0 0 0 5px rgb(61,42,19), 3px 3px 4px 3px black;
+    }
+
+    #chineseChessTableMain .panelDivActive {
+        background: linear-gradient(to left, rgb(23, 172, 80), rgb(23, 172, 80)) left top no-repeat, 
+        linear-gradient(to bottom, rgb(23, 172, 80), rgba(23, 172, 80)) left top no-repeat, 
+        linear-gradient(to left, rgba(23, 172, 80), rgba(23, 172, 80)) right top no-repeat,
+        linear-gradient(to bottom, rgba(23, 172, 80), rgba(23, 172, 80)) right top no-repeat, 
+        linear-gradient(to left, rgba(23, 172, 80), rgba(23, 172, 80)) left bottom no-repeat,
+        linear-gradient(to bottom, rgba(23, 172, 80), rgba(23, 172, 80)) left bottom no-repeat,
+        linear-gradient(to left, rgba(23, 172, 80), rgba(23, 172, 80)) right bottom no-repeat,
+        linear-gradient(to left, rgba(23, 172, 80), rgba(23, 172, 80)) right bottom no-repeat;
+        background-size: 0.13rem 0.7rem, 0.7rem 0.13rem, 0.13rem 0.7rem, 0.7rem 0.13rem;
     }
 
     #chatPanel #chatContent ul li {

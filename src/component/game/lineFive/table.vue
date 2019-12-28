@@ -561,16 +561,20 @@ import { clearInterval } from 'timers';
 
 <style>
 
-    #lineFiveTableMain #chessPanel .whiteChess {
-        border: 2px solid rgb(118,0,12);
-        color: rgb(118,0,12);
-        box-shadow: 0 0 0 2px rgb(178,131,87), 0 0 0 5px rgb(118,0,12), 3px 3px 4px 3px black;
+    #lineFiveTableMain #chessPanel .white {
+        background: -webkit-radial-gradient(at 35% 35%, #FFF, #CCC, #FFF);
+        background: -o-radial-gradient(at 35% 35%, #FFF, #CCC, #FFF);
+        background: -moz-radial-gradient(at 35% 35%, #FFF, #CCC, #FFF);
+        background: radial-gradient(at 35% 35%, #FFF, #CCC, #FFF);
+        box-shadow: .1rem .1rem .05rem rgba(0, 0, 0, .5);
     }
-
-    #lineFiveTableMain #chessPanel .blackChess {
-        border: 3px solid rgb(61,42,19);
-        color: rgb(61,42,19);
-        box-shadow: 0 0 0 2px rgb(178,131,87), 0 0 0 5px rgb(61,42,19), 3px 3px 4px 3px black;
+    
+    #lineFiveTableMain #chessPanel .black {
+        background: -webkit-radial-gradient(at 30% 30%, #999 -13%, #000 35%, #999 200%);
+        background: -o-radial-gradient(at 30% 30%, #999 -13%, #000 35%, #999 200%);
+        background: -moz-radial-gradient(at 30% 30%, #999 -13%, #000 35%, #999 200%);
+        background: radial-gradient(at 30% 30%, #999 -13%, #000 35%, #999 200%);
+        box-shadow: .1rem .1rem .05rem rgba(0, 0, 0, .5);
     }
 
     #chatPanel #chatContent ul li {
