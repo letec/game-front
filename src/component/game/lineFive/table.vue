@@ -540,7 +540,7 @@ import { clearInterval } from 'timers';
     #chessPanel {
         width: 855px;
         height: 855px;
-        background-image: url();
+        /* background-image: url(); */
         background-size: cover;
         border-radius: 8px;
         box-shadow: 1px 2px 5px 0px black;
